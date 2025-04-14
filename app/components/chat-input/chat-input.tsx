@@ -70,7 +70,7 @@ export function ChatInput({
       return
     }
 
-    if (isSubmitting && status === "streaming") {
+    if (status === "streaming") {
       stop()
       return
     }
@@ -101,7 +101,6 @@ export function ChatInput({
             placeholder={`Ask ${APP_NAME}`}
             onKeyDown={handleKeyDown}
             className="mt-2 ml-2 min-h-[44px] text-base leading-[1.3] sm:text-base md:text-base"
-            disabled={isSubmitting}
           />
           <PromptInputActions className="mt-5 w-full justify-between px-2">
             <div className="flex gap-2">
@@ -116,17 +115,19 @@ export function ChatInput({
                 isUserAuthenticated={isUserAuthenticated}
               />
             </div>
-            <PromptInputAction tooltip={isSubmitting ? "Sending..." : "Send"}>
+            <PromptInputAction
+              tooltip={status !== "streaming" ? "Stop" : "Send"}
+            >
               <Button
                 size="sm"
                 className="size-9 rounded-full transition-all duration-300 ease-out"
-                disabled={isSubmitting || (status !== "streaming" && !value)}
+                disabled={!value || isSubmitting}
                 type="button"
                 onClick={handleMainClick}
-                aria-label="Send message"
+                aria-label={status === "streaming" ? "Stop" : "Send message"}
               >
                 {status === "streaming" ? (
-                  <Stop className="size-4" />
+                  <Stop className="size-4 fill-black" />
                 ) : (
                   <ArrowUp className="size-4" />
                 )}
