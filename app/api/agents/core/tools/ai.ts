@@ -174,9 +174,8 @@ Write a report in markdown. Follow this format:
 - Only capitalize the first word of each sentence
 - Clear and direct
 - Use bullet points and code blocks where helpful
-- Embed citations using [source](zola://src-0) based on the citation block
 - Do not add intro or outro — only the markdown report.
-- Link sources inside the relevant sentences using [source](zola://src-X)
+- Link sources inside the relevant sentences.
 - Do NOT list all sources at the end — they should appear where the information is used
     `,
     schema: z.object({ markdown: z.string() }),
