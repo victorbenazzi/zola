@@ -276,14 +276,14 @@ export function Chat() {
       experimental_attachments: attachments || undefined,
     }
 
-    // if its an agent with tooling and first message
-    // we need to handle the agent call differently
-    if (isTooling && messages.length === 0) {
-      // appendReasoning({ role: "user", content: input })
-      await handleAgent(input, uid, currentChatId)
-      setIsSubmitting(false)
-      return
-    }
+    // // if its an agent with tooling and first message
+    // // we need to handle the agent call differently
+    // if (isTooling && messages.length === 0) {
+    //   // appendReasoning({ role: "user", content: input })
+    //   await handleAgent(input, uid, currentChatId)
+    //   setIsSubmitting(false)
+    //   return
+    // }
 
     try {
       handleSubmit(undefined, options)

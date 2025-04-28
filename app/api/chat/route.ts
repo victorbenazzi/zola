@@ -1,3 +1,4 @@
+import { loadAgent } from "@/lib/agents/load-agent"
 import { MODELS_OPTIONS, SYSTEM_PROMPT_DEFAULT } from "@/lib/config"
 import { sanitizeUserInput } from "@/lib/sanitize"
 import { validateUserIdentity } from "@/lib/server/api"
@@ -59,20 +60,10 @@ export async function POST(req: Request) {
       }
     }
 
-    let effectiveSystemPrompt = systemPrompt || SYSTEM_PROMPT_DEFAULT
+    let agentConfig = null
 
     if (agentId) {
-      const { data: agent, error } = await supabase
-        .from("agents")
-        .select("system_prompt")
-        .eq("id", agentId)
-        .single()
-
-      if (error || !agent) {
-        console.warn("Failed to fetch agent prompt, using fallback.")
-      } else {
-        effectiveSystemPrompt = agent.system_prompt || effectiveSystemPrompt
-      }
+      agentConfig = await loadAgent(agentId)
     }
 
     const modelConfig = MODELS_OPTIONS.find((m) => m.id === model)
@@ -90,10 +81,17 @@ export async function POST(req: Request) {
       modelInstance = modelConfig.api_sdk
     }
 
+    let effectiveSystemPrompt =
+      agentConfig?.systemPrompt || systemPrompt || SYSTEM_PROMPT_DEFAULT
+    let effectiveTools = agentConfig?.tools || undefined
+    let effectiveMaxSteps = agentConfig?.maxSteps || 1
+
     const result = streamText({
       model: modelInstance as LanguageModelV1,
       system: effectiveSystemPrompt,
       messages,
+      tools: effectiveTools,
+      maxSteps: effectiveMaxSteps,
       onError: (err) => {
         console.error("🛑 streamText error:", err)
       },
