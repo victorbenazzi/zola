@@ -29,6 +29,8 @@ export type Database = {
           tags: string[] | null
           tools_enabled: boolean
           updated_at: string | null
+          tools: string[] | null
+          max_steps: number | null
         }
         Insert: {
           avatar_url?: string | null
@@ -47,6 +49,8 @@ export type Database = {
           tags?: string[] | null
           tools_enabled?: boolean
           updated_at?: string | null
+          tools?: string[] | null
+          max_steps?: number | null
         }
         Update: {
           avatar_url?: string | null
@@ -65,6 +69,8 @@ export type Database = {
           tags?: string[] | null
           tools_enabled?: boolean
           updated_at?: string | null
+          tools?: string[] | null
+          max_steps?: number | null
         }
         Relationships: [
           {
