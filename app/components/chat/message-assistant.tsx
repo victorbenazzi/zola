@@ -7,43 +7,8 @@ import {
 import { cn } from "@/lib/utils"
 import type { Message as MessageAISDK } from "@ai-sdk/react"
 import { ArrowClockwise, Check, Copy } from "@phosphor-icons/react"
+import { getSources } from "./get-sources"
 import { SourcesList } from "./sources-list"
-
-function getSources(parts: MessageAISDK["parts"]) {
-  const sources = parts
-    ?.filter(
-      (part) => part.type === "source" || part.type === "tool-invocation"
-    )
-    .map((part) => {
-      if (part.type === "source") {
-        return part.source
-      }
-
-      if (
-        part.type === "tool-invocation" &&
-        part.toolInvocation.state === "result"
-      ) {
-        const result = part.toolInvocation.result
-
-        // Handle summarizeSources results which contain citations
-        if (
-          part.toolInvocation.toolName === "summarizeSources" &&
-          result?.result?.[0]?.citations
-        ) {
-          return result.result.flatMap((item: any) => item.citations || [])
-        }
-
-        // Handle other URL-containing results
-        return Array.isArray(result) ? result.flat() : result
-      }
-
-      return null
-    })
-    .filter(Boolean)
-    .flat()
-
-  return sources
-}
 
 type MessageAssistantProps = {
   children: string
@@ -66,16 +31,6 @@ export function MessageAssistant({
 }: MessageAssistantProps) {
   const sources = getSources(parts)
 
-  // Filter out any sources that don't have a valid URL
-  const validSources =
-    sources?.filter(
-      (source) =>
-        source && typeof source === "object" && source.url && source.url !== ""
-    ) || []
-
-  console.log("parts", parts)
-  console.log("validSources", validSources)
-
   return (
     <Message
       className={cn(
@@ -94,9 +49,7 @@ export function MessageAssistant({
           {children}
         </MessageContent>
 
-        {validSources && validSources.length > 0 && (
-          <SourcesList sources={validSources} />
-        )}
+        {sources && sources.length > 0 && <SourcesList sources={sources} />}
 
         <MessageActions
           className={cn(
