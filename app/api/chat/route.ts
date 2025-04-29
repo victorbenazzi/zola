@@ -6,7 +6,7 @@ import { checkUsageByModel, incrementUsageByModel } from "@/lib/usage"
 import { Attachment } from "@ai-sdk/ui-utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { LanguageModelV1, Message as MessageAISDK, streamText } from "ai"
-import { saveMessageToDb } from "./db"
+import { saveFinalAssistantMessage } from "./db"
 
 export const maxDuration = 60
 
@@ -98,9 +98,7 @@ export async function POST(req: Request) {
       },
       async onFinish({ response }) {
         try {
-          for (const msg of response.messages) {
-            await saveMessageToDb(supabase, chatId, msg)
-          }
+          await saveFinalAssistantMessage(supabase, chatId, response.messages)
         } catch (err) {
           console.error(
             "Error in onFinish while saving assistant messages:",

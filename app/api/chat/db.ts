@@ -1,49 +1,101 @@
-import { Attachment } from "@ai-sdk/ui-utils"
-import { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/app/types/database.types"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
-// not exported by ai-sdk, but used in the route
-type ResponseMessage = {
-  role: "user" | "assistant" | "system" | "data" | "tool" | "tool-call"
-  content: string | null | any[] // Can be string, null, or array of parts
-  experimental_attachments?: Attachment[]
+type ContentPart = {
+  type: string
+  text?: string
+  toolCallId?: string
+  toolName?: string
+  args?: any
+  result?: any
+  toolInvocation?: {
+    state: string
+    step: number
+    toolCallId: string
+    toolName: string
+    args?: any
+    result?: any
+  }
 }
 
-export async function saveMessageToDb(
-  supabase: SupabaseClient,
-  chatId: string,
-  msg: ResponseMessage
-) {
-  let content = ""
-  let parts = msg.content ?? null
+type Message = {
+  role: "user" | "assistant" | "system" | "data" | "tool" | "tool-call"
+  content: string | null | ContentPart[]
+}
 
-  if (Array.isArray(parts)) {
-    // Only extract plain text if there is a "text" part
-    const textParts = parts.filter((p) => p.type === "text")
-    if (textParts.length > 0) {
-      content = textParts.map((p) => p.text).join(" ")
+const DEFAULT_STEP = 0
+
+export async function saveFinalAssistantMessage(
+  supabase: SupabaseClient<Database>,
+  chatId: string,
+  messages: Message[]
+) {
+  const parts: ContentPart[] = []
+  const toolInvocations: any[] = []
+  let textParts: string[] = []
+
+  for (const msg of messages) {
+    if (msg.role === "assistant") {
+      if (Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (part.type === "text") {
+            textParts.push(part.text || "")
+            parts.push(part)
+          } else if (part.type === "tool-call") {
+            parts.push({
+              type: "tool-invocation",
+              toolInvocation: {
+                state: "requested",
+                step: DEFAULT_STEP,
+                toolCallId: part.toolCallId || "",
+                toolName: part.toolName || "",
+                args: part.args,
+              },
+            })
+          }
+        }
+      }
+    } else if (msg.role === "tool") {
+      if (Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (part.type === "tool-result") {
+            parts.push({
+              type: "tool-invocation",
+              toolInvocation: {
+                state: "result",
+                step: DEFAULT_STEP,
+                toolCallId: part.toolCallId || "",
+                toolName: part.toolName || "",
+                result: part.result,
+              },
+            })
+            toolInvocations.push({
+              state: "result",
+              step: DEFAULT_STEP,
+              toolCallId: part.toolCallId || "",
+              toolName: part.toolName || "",
+              result: part.result,
+            })
+          }
+        }
+      }
     }
-  } else if (typeof parts === "string") {
-    content = parts
   }
 
-  console.log("msg", msg)
+  const finalPlainText = textParts.join("\n\n")
 
-  const finalRole =
-    msg.role === "tool" || msg.role === "tool-call" ? "assistant" : msg.role
-
-  console.log("finalRole", finalRole)
-
-  const { error, data } = await supabase.from("messages").insert({
+  const { error } = await supabase.from("messages").insert({
     chat_id: chatId,
-    role: finalRole,
-    content: content || null,
-    parts: parts || null,
+    role: "assistant",
+    content: finalPlainText || "[no plain text]",
+    parts: parts,
+    tool_invocations: toolInvocations,
   })
 
   if (error) {
-    console.error(`Error saving ${msg.role} message:`, error)
-    throw new Error(`Failed to save message: ${error.message}`)
+    console.error("Error saving final assistant message:", error)
+    throw new Error(`Failed to save assistant message: ${error.message}`)
   } else {
-    console.log(`${msg.role} message saved successfully.`)
+    console.log("Assistant message saved successfully (merged).")
   }
 }

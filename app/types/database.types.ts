@@ -187,6 +187,7 @@ export type Database = {
           id: number
           role: "system" | "user" | "assistant" | "data"
           parts: Json | null
+          tool_invocations: Json | null
         }
         Insert: {
           experimental_attachments?: Attachment[]
@@ -196,6 +197,7 @@ export type Database = {
           id?: number
           role: "system" | "user" | "assistant" | "data"
           parts?: Json
+          tool_invocations?: Json | null
         }
         Update: {
           experimental_attachments?: Attachment[]
@@ -205,6 +207,7 @@ export type Database = {
           id?: number
           role?: "system" | "user" | "assistant" | "data"
           parts?: Json
+          tool_invocations?: Json | null
         }
         Relationships: []
       }

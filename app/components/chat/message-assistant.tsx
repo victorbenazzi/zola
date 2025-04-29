@@ -9,6 +9,32 @@ import type { Message as MessageAISDK } from "@ai-sdk/react"
 import { ArrowClockwise, Check, Copy } from "@phosphor-icons/react"
 import { SourcesList } from "./sources-list"
 
+function getSources(parts: MessageAISDK["parts"]) {
+  const sources = parts
+    ?.filter(
+      (part) => part.type === "source" || part.type === "tool-invocation"
+    )
+    .map((part) => {
+      if (part.type === "source") {
+        return part.source
+      }
+
+      if (
+        part.type === "tool-invocation" &&
+        part.toolInvocation.state === "result"
+      ) {
+        const result = part.toolInvocation.result
+        return Array.isArray(result) ? result.flat() : result
+      }
+
+      return null
+    })
+    .filter(Boolean)
+    .flat() // Flatten the final array
+
+  return sources
+}
+
 type MessageAssistantProps = {
   children: string
   isLast?: boolean
@@ -28,10 +54,7 @@ export function MessageAssistant({
   onReload,
   parts,
 }: MessageAssistantProps) {
-  // old way of getting sources
-  const sources = parts
-    ?.filter((part) => part.type === "source")
-    .map((part) => part.source)
+  const sources = getSources(parts)
 
   return (
     <Message

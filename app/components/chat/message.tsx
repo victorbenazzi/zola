@@ -1,10 +1,7 @@
-import { Message as MessageContainer } from "@/components/prompt-kit/message"
-import { cn } from "@/lib/utils"
 import { Message as MessageType } from "@ai-sdk/react"
 import React, { useState } from "react"
 import { MessageAssistant } from "./message-assistant"
 import { MessageUser } from "./message-user"
-import { SourcesList } from "./sources-list"
 
 type MessageProps = {
   variant: MessageType["role"]
@@ -52,24 +49,6 @@ export function Message({
         hasScrollAnchor={hasScrollAnchor}
         attachments={attachments}
       />
-    )
-  }
-
-  if (
-    variant === "assistant" &&
-    (parts?.[0]?.type as string) === "tool-result"
-  ) {
-    const sources = (parts?.[0] as any).result
-
-    return (
-      <MessageContainer
-        className={cn(
-          "group flex w-full max-w-3xl px-6 pb-2",
-          hasScrollAnchor && "min-h-scroll-anchor"
-        )}
-      >
-        <SourcesList sources={sources} className="w-full" />
-      </MessageContainer>
     )
   }
 
