@@ -24,13 +24,23 @@ function getSources(parts: MessageAISDK["parts"]) {
         part.toolInvocation.state === "result"
       ) {
         const result = part.toolInvocation.result
+
+        // Handle summarizeSources results which contain citations
+        if (
+          part.toolInvocation.toolName === "summarizeSources" &&
+          result?.result?.[0]?.citations
+        ) {
+          return result.result.flatMap((item: any) => item.citations || [])
+        }
+
+        // Handle other URL-containing results
         return Array.isArray(result) ? result.flat() : result
       }
 
       return null
     })
     .filter(Boolean)
-    .flat() // Flatten the final array
+    .flat()
 
   return sources
 }
@@ -56,6 +66,16 @@ export function MessageAssistant({
 }: MessageAssistantProps) {
   const sources = getSources(parts)
 
+  // Filter out any sources that don't have a valid URL
+  const validSources =
+    sources?.filter(
+      (source) =>
+        source && typeof source === "object" && source.url && source.url !== ""
+    ) || []
+
+  console.log("parts", parts)
+  console.log("validSources", validSources)
+
   return (
     <Message
       className={cn(
@@ -74,7 +94,9 @@ export function MessageAssistant({
           {children}
         </MessageContent>
 
-        {sources && sources.length > 0 && <SourcesList sources={sources} />}
+        {validSources && validSources.length > 0 && (
+          <SourcesList sources={validSources} />
+        )}
 
         <MessageActions
           className={cn(

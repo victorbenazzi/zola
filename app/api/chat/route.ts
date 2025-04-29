@@ -87,6 +87,8 @@ export async function POST(req: Request) {
     let effectiveTools = agentConfig?.tools || undefined
     let effectiveMaxSteps = agentConfig?.maxSteps || 1
 
+    console.log("agentConfig", agentConfig)
+
     const result = streamText({
       model: modelInstance as LanguageModelV1,
       system: effectiveSystemPrompt,

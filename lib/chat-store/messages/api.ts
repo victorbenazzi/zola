@@ -57,8 +57,6 @@ export async function addMessage(
 ): Promise<void> {
   const supabase = createClient()
 
-  console.log("message", message)
-
   await supabase.from("messages").insert({
     chat_id: chatId,
     role: message.role,

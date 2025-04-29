@@ -11,7 +11,9 @@ type SourcesListProps = {
   className?: string
 }
 
-const getFavicon = (url: string) => {
+const getFavicon = (url: string | null) => {
+  if (!url) return null
+
   const domain = new URL(url).hostname
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 }
@@ -51,10 +53,10 @@ export function SourcesList({ sources, className }: SourcesListProps) {
           <div className="flex flex-1 flex-row items-center gap-2 text-left text-base">
             Sources
             <div className="flex -space-x-1">
-              {sources.map((source) => (
+              {sources?.map((source) => (
                 <img
                   key={source.url}
-                  src={getFavicon(source.url)}
+                  src={getFavicon(source.url) || ""}
                   alt={`Favicon for ${source.title}`}
                   className="border-background h-4 w-4 rounded-sm border"
                 />
@@ -94,7 +96,7 @@ export function SourcesList({ sources, className }: SourcesListProps) {
                         className="text-primary group line-clamp-1 flex items-center gap-1 hover:underline"
                       >
                         <img
-                          src={getFavicon(source.url)}
+                          src={getFavicon(source.url) || ""}
                           alt={`Favicon for ${source.title}`}
                           className="h-4 w-4 flex-shrink-0 rounded-sm"
                         />
