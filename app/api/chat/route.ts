@@ -87,8 +87,6 @@ export async function POST(req: Request) {
     let effectiveTools = agentConfig?.tools || undefined
     let effectiveMaxSteps = agentConfig?.maxSteps || 1
 
-    console.log("agentConfig", agentConfig)
-
     const result = streamText({
       model: modelInstance as LanguageModelV1,
       system: effectiveSystemPrompt,
@@ -109,6 +107,28 @@ export async function POST(req: Request) {
         }
       },
     })
+
+    for await (const chunk of result.fullStream) {
+      if (chunk.type === "tool-call") {
+        console.log("🛠 tool call:", chunk.toolName, chunk.args)
+      }
+
+      if (chunk.type === "tool-call-streaming-start") {
+        console.log("✅ tool call streaming start:", chunk.toolName)
+      }
+
+      if (chunk.type === "step-start") {
+        console.log("✅ step start:", chunk.messageId)
+      }
+
+      if (chunk.type === "step-finish") {
+        console.log("✅ step finish:", chunk.messageId)
+      }
+
+      if (chunk.type === "error") {
+        console.error("❌ tool error:", chunk.error)
+      }
+    }
 
     // Ensure the stream is consumed so onFinish is triggered.
     result.consumeStream()

@@ -12,35 +12,35 @@ export async function summarizeSources(input: {
   result: {
     query: string
     summary: string
-    citations: { title: string; url: string; snippet: string }[]
   }[]
 }> {
   try {
     const summaries = await Promise.all(
       input.searchResults.map(async ({ query, sources }) => {
-        const bulletedSources = sources
-          .map((s, i) => `${i + 1}. "${s.title}": ${s.snippet}`)
+        const sourcesList = sources
+          .map((s, i) => `(${i + 1}) [${s.title}](${s.url}): ${s.snippet}`)
           .join("\n")
 
         const { object } = await generateObject({
           model: openai("gpt-4.1-mini"),
-          prompt: `Summarize the key insights about "${query}" as **exactly 2-6 bullets**.
-• Each bullet **must start with "-" "** (hyphen + space) – no other bullet symbols.
-• One concise sentence per bullet; no intro, no conclusion, no extra paragraphs.
-• Base the bullets only on the information below, do not include links.
-• Focus on specific ideas, patterns, or tactics, not general claims.
-• Do not sound AI-generated, sound like a human writing a report.
+          prompt: `Summarize "${query}" with 3–6 bullets.
 
-${bulletedSources}`,
-          system: `You are a senior research writer.
+- Start each bullet with "- "
+- Weave the [source title](url) naturally inside each sentence.
+- Don't mention "source:" or "favicon" or anything like that.
+- Do not list sources separately.
+- No intro, no conclusion.
 
-Your job is to extract only the most useful and practical insights from a given source.
+Sources:
+${sourcesList}
+`,
+          system: `
+You are a senior research summarizer.
 
-Write in a clear, direct tone. Avoid filler. No introductions or conclusions.
+Only return clean markdown bullets with natural in-sentence links.
 
-Always return 3–6 markdown bullet points starting with "- ".
-
-Be specific. If nothing useful is in the snippet, say: "- No relevant insight found."
+Use a clear, practical tone. Be specific. Never fake information.
+Always integrate source links naturally inside each bullet.
           `,
           schema: z.object({ summary: z.string() }),
         })
@@ -48,7 +48,6 @@ Be specific. If nothing useful is in the snippet, say: "- No relevant insight fo
         return {
           query,
           summary: object.summary.trim(),
-          citations: sources,
         }
       })
     )
