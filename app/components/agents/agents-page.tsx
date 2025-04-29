@@ -24,7 +24,7 @@ export function AgentsPage({ agents }: AgentsPageProps) {
     setOpenAgentId(agentId)
   }
 
-  const researchAgent = agents.find((agent) => agent.slug === "zola-research")
+  const researchAgent = agents.find((agent) => agent.slug === "research")
   const featuredAgents = agents.filter((agent) =>
     ZOLA_AGENTS_SLUGS.includes(agent.slug)
   )
