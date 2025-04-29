@@ -20,9 +20,7 @@ export async function getCachedMessages(
   )
 }
 
-export async function fetchAndCacheMessages(
-  chatId: string
-): Promise<MessageAISDK[]> {
+export async function fetchAndCacheMessages(chatId: string) {
   const supabase = createClient()
 
   const { data, error } = await supabase

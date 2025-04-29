@@ -26,14 +26,19 @@ export async function saveMessageToDb(
     content = parts
   }
 
+  console.log("msg", msg)
+
+  const finalRole =
+    msg.role === "tool" || msg.role === "tool-call" ? "assistant" : msg.role
+
+  console.log("finalRole", finalRole)
+
   const { error, data } = await supabase.from("messages").insert({
     chat_id: chatId,
-    role: msg.role,
+    role: finalRole,
     content: content || null,
     parts: parts || null,
   })
-
-  console.log("result", data)
 
   if (error) {
     console.error(`Error saving ${msg.role} message:`, error)

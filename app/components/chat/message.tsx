@@ -7,7 +7,7 @@ import { MessageUser } from "./message-user"
 import { SourcesList } from "./sources-list"
 
 type MessageProps = {
-  variant: MessageType["role"] | "tool"
+  variant: MessageType["role"]
   children: string
   id: string
   attachments?: MessageType["experimental_attachments"]
@@ -39,31 +39,6 @@ export function Message({
     setTimeout(() => setCopied(false), 500)
   }
 
-  console.log("parts", parts)
-
-  if (variant === "tool") {
-    const toolResult = parts?.find(
-      // @todo: don't know why ai sdk doesn't have tool-result type
-      (part) => (part as any).type === "tool-result"
-    )
-    console.log("toolResult", toolResult)
-
-    const sources = (toolResult as any).result
-
-    console.log("sources", sources)
-
-    return (
-      <MessageContainer
-        className={cn(
-          "group flex w-full max-w-3xl px-6 pb-2",
-          hasScrollAnchor && "min-h-scroll-anchor"
-        )}
-      >
-        <SourcesList sources={sources} className="w-full" />
-      </MessageContainer>
-    )
-  }
-
   if (variant === "user") {
     return (
       <MessageUser
@@ -77,6 +52,24 @@ export function Message({
         hasScrollAnchor={hasScrollAnchor}
         attachments={attachments}
       />
+    )
+  }
+
+  if (
+    variant === "assistant" &&
+    (parts?.[0]?.type as string) === "tool-result"
+  ) {
+    const sources = (parts?.[0] as any).result
+
+    return (
+      <MessageContainer
+        className={cn(
+          "group flex w-full max-w-3xl px-6 pb-2",
+          hasScrollAnchor && "min-h-scroll-anchor"
+        )}
+      >
+        <SourcesList sources={sources} className="w-full" />
+      </MessageContainer>
     )
   }
 

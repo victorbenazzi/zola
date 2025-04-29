@@ -32,8 +32,11 @@ export function Conversation({
   const formattedMessage = messages.filter(
     (message) =>
       message.role !== "assistant" ||
-      (message.role === "assistant" && message.content !== null)
+      (message.role === "assistant" &&
+        (message.parts?.[0]?.type as string) !== "tool-call")
   )
+
+  console.log("formattedMessage", formattedMessage)
 
   if (!formattedMessage || formattedMessage.length === 0)
     return <div className="h-full w-full"></div>
