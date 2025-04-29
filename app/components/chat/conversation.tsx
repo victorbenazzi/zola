@@ -29,7 +29,13 @@ export function Conversation({
   const scrollRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  if (!messages || messages.length === 0)
+  const formattedMessage = messages.filter(
+    (message) =>
+      message.role !== "assistant" ||
+      (message.role === "assistant" && message.content !== null)
+  )
+
+  if (!formattedMessage || formattedMessage.length === 0)
     return <div className="h-full w-full"></div>
 
   return (
@@ -43,7 +49,7 @@ export function Conversation({
           scrollbarGutter: "stable both-edges",
         }}
       >
-        {messages?.map((message, index) => {
+        {formattedMessage?.map((message, index) => {
           const isLast = index === messages.length - 1 && status !== "submitted"
           const hasScrollAnchor =
             isLast && messages.length > initialMessageCount.current

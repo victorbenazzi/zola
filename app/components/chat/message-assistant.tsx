@@ -28,6 +28,7 @@ export function MessageAssistant({
   onReload,
   parts,
 }: MessageAssistantProps) {
+  // old way of getting sources
   const sources = parts
     ?.filter((part) => part.type === "source")
     .map((part) => part.source)

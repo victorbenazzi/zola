@@ -33,10 +33,11 @@ export function SourcesList({ sources, className }: SourcesListProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const formatUrl = (url: string) => {
-    return url
-      .replace(/^https?:\/\//, "")
-      .replace(/\/$/, "")
-      .replace(/^www\./, "")
+    try {
+      return url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")
+    } catch {
+      return url
+    }
   }
 
   return (
@@ -50,9 +51,9 @@ export function SourcesList({ sources, className }: SourcesListProps) {
           <div className="flex flex-1 flex-row items-center gap-2 text-left text-base">
             Sources
             <div className="flex -space-x-1">
-              {sources.slice(0, 3).map((source) => (
+              {sources.map((source) => (
                 <img
-                  key={source.id}
+                  key={source.url}
                   src={getFavicon(source.url)}
                   alt={`Favicon for ${source.title}`}
                   className="border-background h-4 w-4 rounded-sm border"

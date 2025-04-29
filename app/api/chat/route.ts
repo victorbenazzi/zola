@@ -6,6 +6,7 @@ import { checkUsageByModel, incrementUsageByModel } from "@/lib/usage"
 import { Attachment } from "@ai-sdk/ui-utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 import { LanguageModelV1, Message as MessageAISDK, streamText } from "ai"
+import { saveMessageToDb } from "./db"
 
 export const maxDuration = 60
 
@@ -95,41 +96,10 @@ export async function POST(req: Request) {
       onError: (err) => {
         console.error("🛑 streamText error:", err)
       },
-      // When the response finishes, insert the assistant messages to supabase
       async onFinish({ response }) {
         try {
           for (const msg of response.messages) {
-            console.log("Response message role:", msg.role)
-            if (msg.content) {
-              let plainText = msg.content
-              try {
-                const parsed = msg.content
-                if (Array.isArray(parsed)) {
-                  // Join all parts of type "text"
-                  plainText = parsed
-                    .filter((part) => part.type === "text")
-                    .map((part) => part.text)
-                    .join(" ")
-                }
-              } catch (err) {
-                console.warn(
-                  "Could not parse message content as JSON, using raw content"
-                )
-              }
-
-              const { error: assistantError } = await supabase
-                .from("messages")
-                .insert({
-                  chat_id: chatId,
-                  role: "assistant",
-                  content: plainText.toString(),
-                })
-              if (assistantError) {
-                console.error("Error saving assistant message:", assistantError)
-              } else {
-                console.log("Assistant message saved successfully.")
-              }
-            }
+            await saveMessageToDb(supabase, chatId, msg)
           }
         } catch (err) {
           console.error(

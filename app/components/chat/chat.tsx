@@ -86,10 +86,10 @@ export function Chat() {
     api: API_ROUTE_CHAT,
     initialMessages,
     // save assistant to messages data layer
-    onFinish: async (message) => {
-      if (!chatId) return
-      await cacheAndAddMessage(message)
-    },
+    // onFinish: async (message) => {
+    //   if (!chatId) return
+    //   await cacheAndAddMessage(message)
+    // },
   })
 
   // Use the custom hook for chat utilities
