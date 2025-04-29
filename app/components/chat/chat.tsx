@@ -243,15 +243,6 @@ export function Chat() {
       experimental_attachments: attachments || undefined,
     }
 
-    // // if its an agent with tooling and first message
-    // // we need to handle the agent call differently
-    // if (isTooling && messages.length === 0) {
-    //   // appendReasoning({ role: "user", content: input })
-    //   await handleAgent(input, uid, currentChatId)
-    //   setIsSubmitting(false)
-    //   return
-    // }
-
     try {
       handleSubmit(undefined, options)
       setMessages((prev) => prev.filter((msg) => msg.id !== optimisticId))
@@ -421,11 +412,7 @@ export function Chat() {
           systemPrompt={systemPrompt}
           stop={stop}
           status={status}
-          placeholder={
-            isTooling && messages.length === 0
-              ? "Describe what you want to research in detail, e.g. a specific company, trend, or question. Add context like audience, angle, goals, or examples to help me create a focused and useful report."
-              : "Ask Zola anything"
-          }
+          placeholder={"Ask Zola anything"}
         />
       </motion.div>
       <FeedbackWidget authUserId={user?.id} />

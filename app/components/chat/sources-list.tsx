@@ -53,9 +53,9 @@ export function SourcesList({ sources, className }: SourcesListProps) {
           <div className="flex flex-1 flex-row items-center gap-2 text-left text-base">
             Sources
             <div className="flex -space-x-1">
-              {sources?.map((source) => (
+              {sources?.map((source, index) => (
                 <img
-                  key={source.url}
+                  key={`${source.url}-${index}`}
                   src={getFavicon(source.url) || ""}
                   alt={`Favicon for ${source.title}`}
                   className="border-background h-4 w-4 rounded-sm border"
