@@ -99,13 +99,14 @@ export function DialogAgent({
 
   const renderContent = (isMobile?: boolean) => (
     <AgentDetail
-      id={id}
       slug={slug}
       name={name}
       description={description}
       example_inputs={example_inputs}
       avatar_url={avatar_url}
-      // system_prompt={system_prompt}
+      system_prompt={system_prompt}
+      tools={tools}
+      mcp_config={mcp_config}
       onAgentClick={onAgentClick}
       randomAgents={randomAgents}
       isMobile={isMobile}

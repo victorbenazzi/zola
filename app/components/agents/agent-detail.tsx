@@ -1,6 +1,8 @@
 "use client"
 
 import { AgentSummary } from "@/app/types/agent"
+import type { Tables } from "@/app/types/database.types"
+import { ButtonCopy } from "@/components/common/button-copy"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,8 +15,36 @@ import { ChatCircle, Check, CopySimple, User } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
+function SystemPromptDisplay({ prompt }: { prompt: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const isLong = prompt.length > 300
+
+  const displayText =
+    isLong && !expanded ? prompt.slice(0, 300) + "..." : prompt
+
+  return (
+    <div className="group relative rounded-md border p-2">
+      <div className="absolute top-0 right-0 flex h-9 items-center bg-white pr-1.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+        <ButtonCopy code={prompt} />
+      </div>
+      <div className="text-muted-foreground max-h-[expanded ? '400px' : '150px'] overflow-auto text-left font-mono text-sm whitespace-pre-wrap">
+        {displayText}
+      </div>
+      {isLong && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setExpanded(!expanded)}
+          className="mt-2 h-6 text-xs"
+        >
+          {expanded ? "Show less" : "Show more"}
+        </Button>
+      )}
+    </div>
+  )
+}
+
 type AgentDetailProps = {
-  id: string
   slug: string
   name: string
   description: string
@@ -25,10 +55,12 @@ type AgentDetailProps = {
   randomAgents: AgentSummary[]
   isFullPage?: boolean
   isMobile?: boolean
+  system_prompt?: string
+  tools?: string[]
+  mcp_config?: Tables<"agents">["mcp_config"]
 }
 
 export function AgentDetail({
-  id,
   slug,
   name,
   description,
@@ -39,6 +71,9 @@ export function AgentDetail({
   randomAgents,
   isFullPage,
   isMobile,
+  system_prompt,
+  tools,
+  mcp_config,
 }: AgentDetailProps) {
   const [copied, setCopied] = useState(false)
   const router = useRouter()
@@ -96,6 +131,28 @@ export function AgentDetail({
 
       <div className="px-4 md:px-8">
         <p className="text-muted-foreground mb-6">{description}</p>
+      </div>
+
+      {system_prompt && (
+        <div className="mt-4 mb-8 px-4 md:px-8">
+          <h2 className="mb-4 text-lg font-medium">System Prompt</h2>
+          <SystemPromptDisplay prompt={system_prompt} />
+        </div>
+      )}
+
+      <div className="mb-8 grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:px-8">
+        <div className="rounded-md border p-2">
+          <h3 className="mb-2 text-xs font-medium">Tools</h3>
+          <p className="text-muted-foreground text-xs">
+            {tools?.length ? tools.join(", ") : "search"}
+          </p>
+        </div>
+        <div className="rounded-md border p-2">
+          <h3 className="mb-2 text-xs font-medium">MCP</h3>
+          <p className="text-muted-foreground truncate text-xs">
+            {mcp_config ? JSON.stringify(mcp_config) : "none"}
+          </p>
+        </div>
       </div>
 
       <div className="mb-8 px-4 md:px-8">
@@ -194,7 +251,7 @@ export function AgentDetail({
         </Tooltip>
         <Button onClick={tryAgent} className="flex-1 text-center" type="button">
           <ChatCircle className="size-4" />
-          Try this agent
+          Chat with {name}
         </Button>
       </div>
     </div>
