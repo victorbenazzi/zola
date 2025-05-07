@@ -1,7 +1,7 @@
 "use client"
 
 import { useUser } from "@/app/providers/user-provider"
-import { ModelSelector } from "@/components/common/model-selector"
+import { ModelSelector } from "@/components/common/model-selector/base"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
 import { useChats } from "@/lib/chat-store/chats/provider"

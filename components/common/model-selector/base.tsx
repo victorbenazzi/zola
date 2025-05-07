@@ -7,11 +7,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { Model } from "@/lib/config"
 import { MODELS_FREE, MODELS_OPTIONS, MODELS_PRO } from "@/lib/config"
 import { cn } from "@/lib/utils"
-import { CaretDown, Check, Image } from "@phosphor-icons/react"
+import { CaretDown, Star } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
+import { SubMenu } from "./sub-menu"
 
 type ModelSelectorProps = {
   selectedModelId: string
@@ -50,12 +52,13 @@ export function ModelSelector({
     }
 
     if (hoveredModel) {
-      // Give it a moment to render
-      setTimeout(updateDropdownRect, 10)
+      updateDropdownRect()
     }
   }, [hoveredModel])
 
-  const renderModelItem = (model: any) => {
+  const renderModelItem = (model: Model) => {
+    const isPro = MODELS_PRO.some((proModel) => proModel.id === model.id)
+
     return (
       <DropdownMenuItem
         key={model.id}
@@ -76,6 +79,12 @@ export function ModelSelector({
             <span className="text-sm">{model.name}</span>
           </div>
         </div>
+        {isPro && (
+          <div className="border-input bg-accent text-muted-foreground flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-medium">
+            <Star className="size-2" />
+            <span>Pro</span>
+          </div>
+        )}
       </DropdownMenuItem>
     )
   }
@@ -85,7 +94,7 @@ export function ModelSelector({
     (model) => model.id === hoveredModel
   )
 
-  const models = [...MODELS_FREE, ...MODELS_PRO]
+  const models = [...MODELS_FREE, ...MODELS_PRO] as Model[]
 
   return (
     <div>
@@ -103,12 +112,12 @@ export function ModelSelector({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="flex max-h-[400px] w-[300px] flex-col space-y-0.5 overflow-y-auto"
+          className="flex max-h-[320px] w-[300px] flex-col space-y-0.5 overflow-y-auto"
           align="start"
           sideOffset={4}
           forceMount
         >
-          {models.map(renderModelItem)}
+          {models.map((model) => renderModelItem(model))}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -117,63 +126,10 @@ export function ModelSelector({
         hoveredModelData &&
         dropdownRect &&
         createPortal(
-          <div
-            className="bg-popover fixed z-[51] w-[280px] rounded-md border p-3 shadow-md"
-            style={{
-              top: `${dropdownRect.top}px`,
-              left: `${dropdownRect.right + 12}px`,
-            }}
-          >
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3">
-                {hoveredModelData?.icon && (
-                  <hoveredModelData.icon className="size-5" />
-                )}
-                <h3 className="font-medium">{hoveredModelData.name}</h3>
-              </div>
-
-              <p className="text-muted-foreground text-sm">
-                {hoveredModelData.description}
-              </p>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">Provider</span>
-                  <span>{hoveredModelData.provider}</span>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium">Supports</span>
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Web Search</span>
-                      {hoveredModelData.features?.find(
-                        (f: any) => f.id === "tool-use"
-                      )?.enabled ? (
-                        <Check className="size-5" />
-                      ) : null}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Vision</span>
-                      {hoveredModelData.features?.find(
-                        (f: any) => f.id === "file-upload"
-                      )?.enabled ? (
-                        <Check className="size-5" />
-                      ) : null}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Tools</span>
-                      {hoveredModelData.features?.find(
-                        (f: any) => f.id === "tool-use"
-                      )?.enabled ? (
-                        <Check className="size-5" />
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>,
+          <SubMenu
+            hoveredModelData={hoveredModelData}
+            dropdownRect={dropdownRect}
+          />,
           portalElement
         )}
     </div>

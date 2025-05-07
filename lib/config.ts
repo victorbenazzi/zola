@@ -28,8 +28,7 @@ export type Model = {
   id: string
   name: string
   provider: string
-  available?: boolean
-  api_sdk?: OpenProvidersOptions<SupportedModel>
+  api_sdk: OpenProvidersOptions<SupportedModel>
   features?: {
     id: string
     enabled: boolean
@@ -57,6 +56,7 @@ export const MODELS_FREE = [
         enabled: false,
       },
     ],
+    creator: "deepseek",
     api_sdk: "deepseek/deepseek-r1:free", // this is a special case for openrouter
     description:
       "A reasoning-first model trained with reinforcement learning, built for math, code, and complex problem solving",
@@ -76,6 +76,7 @@ export const MODELS_FREE = [
         enabled: true,
       },
     ],
+    creator: "mistral",
     api_sdk: openproviders("pixtral-large-latest"),
     description:
       "Mistral’s flagship model. Great for reasoning, writing, and advanced tasks.",
@@ -95,6 +96,7 @@ export const MODELS_FREE = [
         enabled: true,
       },
     ],
+    creator: "mistral",
     api_sdk: openproviders("mistral-large-latest"),
     description:
       "Fine-tuned for chat. A lighter, faster option for everyday use.",
@@ -114,6 +116,7 @@ export const MODELS_FREE = [
         enabled: true,
       },
     ],
+    creator: "openai",
     api_sdk: openproviders("gpt-4.1-nano"),
     description:
       "Ultra fast and cheap. Ideal for simple tasks, summaries, or classification.",
@@ -136,6 +139,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "openai",
     api_sdk: openproviders("gpt-4.1"),
     description:
       "OpenAI’s most powerful model. Excellent at coding, writing, and complex tasks.",
@@ -155,6 +159,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "openai",
     api_sdk: openproviders("gpt-4.1-mini"),
     description:
       "Fast and smart — a great balance for most tasks. Outperforms GPT‑4o mini.",
@@ -170,6 +175,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "google",
     api_sdk: openproviders("gemini-2.5-pro-exp-03-25"),
     description: "Advanced reasoning, coding, and multimodal understanding.",
     icon: Gemini,
@@ -184,6 +190,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "google",
     api_sdk: openproviders("gemini-2.0-flash-001"),
     description: "Fast and cost-efficient with streaming and real-time output.",
     icon: Gemini,
@@ -198,6 +205,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "google",
     api_sdk: openproviders("gemini-1.5-pro"),
     description: "Smart general-purpose model for complex reasoning tasks.",
     icon: Gemini,
@@ -212,6 +220,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "google",
     api_sdk: openproviders("gemini-1.5-flash"),
     description: "Balanced speed and quality, great for a variety of tasks.",
     icon: Gemini,
@@ -226,6 +235,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "anthropic",
     api_sdk: openproviders("claude-3-7-sonnet-20250219"),
     description:
       "Anthropic’s most intelligent model. Excels at step-by-step reasoning and complex tasks.",
@@ -241,6 +251,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "anthropic",
     api_sdk: openproviders("claude-3-5-haiku-20241022"),
     description:
       "Fastest and most cost-effective Claude model. Ideal for quick, everyday tasks.",
@@ -256,6 +267,7 @@ export const MODELS_PRO = [
         enabled: true,
       },
     ],
+    creator: "anthropic",
     api_sdk: openproviders("claude-3-opus-20240229"),
     description:
       "Anthropic’s most powerful model for highly complex reasoning and generation tasks.",
