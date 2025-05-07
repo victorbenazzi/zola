@@ -51,6 +51,9 @@ export function ModelSelector({
   const portalRef = useRef<HTMLElement | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
 
+  // Ref for input to maintain focus
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
   // Setup portal element on mount
   useEffect(() => {
     portalRef.current = document.body
@@ -175,6 +178,12 @@ export function ModelSelector({
     </Button>
   )
 
+  // Handle input change without losing focus
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    setSearchQuery(e.target.value)
+  }
+
   if (isMobile) {
     return (
       <>
@@ -193,15 +202,33 @@ export function ModelSelector({
               <div className="relative">
                 <MagnifyingGlass className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
                 <Input
+                  ref={searchInputRef}
                   placeholder="Search models..."
                   className="pl-8"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
             </div>
-            <div className="flex flex-col space-y-0.5 overflow-y-auto px-4 pb-6">
-              {filteredModels.map((model) => renderModelItem(model))}
+            <div className="flex h-full flex-col space-y-0.5 overflow-y-auto px-4 pb-6">
+              {filteredModels.length > 0 ? (
+                filteredModels.map((model) => renderModelItem(model))
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                  <p className="text-muted-foreground mb-2 text-sm">
+                    No results found.
+                  </p>
+                  <a
+                    href="https://github.com/ibelick/zola/issues/new?title=Model%20Request%3A%20"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground text-sm underline"
+                  >
+                    Request a new model
+                  </a>
+                </div>
+              )}
             </div>
           </DrawerContent>
         </Drawer>
@@ -238,63 +265,82 @@ export function ModelSelector({
             <div className="relative">
               <MagnifyingGlass className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
               <Input
+                ref={searchInputRef}
                 placeholder="Search models..."
                 className="border border-none pl-8 shadow-none focus-visible:ring-0"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 onClick={(e) => e.stopPropagation()}
+                onFocus={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
               />
             </div>
           </div>
-          <div className="flex flex-col space-y-0.5 overflow-y-auto px-1 pt-1 pb-0">
-            {filteredModels.map((model) => {
-              const isPro = MODELS_PRO.some(
-                (proModel) => proModel.id === model.id
-              )
+          <div className="flex h-full flex-col space-y-0.5 overflow-y-auto px-1 pt-1 pb-0">
+            {filteredModels.length > 0 ? (
+              filteredModels.map((model) => {
+                const isPro = MODELS_PRO.some(
+                  (proModel) => proModel.id === model.id
+                )
 
-              return (
-                <DropdownMenuItem
-                  key={model.id}
-                  className={cn(
-                    "flex w-full items-center justify-between px-3 py-2",
-                    selectedModelId === model.id && "bg-accent"
-                  )}
-                  onSelect={() => {
-                    if (isPro) {
-                      setSelectedProModel(model.id)
-                      setIsProDialogOpen(true)
-                      return
-                    }
+                return (
+                  <DropdownMenuItem
+                    key={model.id}
+                    className={cn(
+                      "flex w-full items-center justify-between px-3 py-2",
+                      selectedModelId === model.id && "bg-accent"
+                    )}
+                    onSelect={(e) => {
+                      if (isPro) {
+                        setSelectedProModel(model.id)
+                        setIsProDialogOpen(true)
+                        return
+                      }
 
-                    setSelectedModelId(model.id)
-                    setIsDropdownOpen(false)
-                  }}
-                  onFocus={() => {
-                    if (isDropdownOpen) {
-                      setHoveredModel(model.id)
-                    }
-                  }}
-                  onMouseEnter={() => {
-                    if (isDropdownOpen) {
-                      setHoveredModel(model.id)
-                    }
-                  }}
+                      setSelectedModelId(model.id)
+                      setIsDropdownOpen(false)
+                    }}
+                    onFocus={() => {
+                      if (isDropdownOpen) {
+                        setHoveredModel(model.id)
+                      }
+                    }}
+                    onMouseEnter={() => {
+                      if (isDropdownOpen) {
+                        setHoveredModel(model.id)
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {model?.icon && <model.icon className="size-5" />}
+                      <div className="flex flex-col gap-0">
+                        <span className="text-sm">{model.name}</span>
+                      </div>
+                    </div>
+                    {isPro && (
+                      <div className="border-input bg-accent text-muted-foreground flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-medium">
+                        <Star className="size-2" />
+                        <span>Pro</span>
+                      </div>
+                    )}
+                  </DropdownMenuItem>
+                )
+              })
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                <p className="text-muted-foreground mb-1 text-sm">
+                  No results found.
+                </p>
+                <a
+                  href="https://github.com/ibelick/zola/issues/new?title=Model%20Request%3A%20"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground text-sm underline"
                 >
-                  <div className="flex items-center gap-3">
-                    {model?.icon && <model.icon className="size-5" />}
-                    <div className="flex flex-col gap-0">
-                      <span className="text-sm">{model.name}</span>
-                    </div>
-                  </div>
-                  {isPro && (
-                    <div className="border-input bg-accent text-muted-foreground flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-medium">
-                      <Star className="size-2" />
-                      <span>Pro</span>
-                    </div>
-                  )}
-                </DropdownMenuItem>
-              )
-            })}
+                  Request a new model
+                </a>
+              </div>
+            )}
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
