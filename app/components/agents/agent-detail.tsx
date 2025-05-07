@@ -54,7 +54,6 @@ type AgentDetailProps = {
   onAgentClick?: (agentId: string) => void
   randomAgents: AgentSummary[]
   isFullPage?: boolean
-  isMobile?: boolean
   system_prompt?: string
   tools?: string[]
   mcp_config?: Tables<"agents">["mcp_config"]
@@ -107,8 +106,18 @@ export function AgentDetail({
   }
 
   return (
-    <div className="bg-background relative flex h-full max-h-[80vh] w-full flex-col">
-      <div className="flex-1 overflow-x-hidden overflow-y-auto pb-24">
+    <div
+      className={cn(
+        "bg-background relative flex w-full flex-col",
+        "h-full max-h-[80vh]"
+      )}
+    >
+      <div
+        className={cn(
+          "flex-1 overflow-x-hidden overflow-y-auto",
+          isFullPage ? "pb-0" : "pb-20"
+        )}
+      >
         <div className="mb-6 flex items-center gap-4 pt-8 pl-8">
           <div className="bg-muted h-16 w-16 flex-shrink-0 overflow-hidden rounded-full">
             <img
@@ -217,7 +226,11 @@ export function AgentDetail({
         )}
       </div>
 
-      <div className="bg-background absolute right-0 bottom-0 left-0 flex flex-row gap-2 border-t px-4 py-4 md:px-8">
+      <div
+        className={cn(
+          "bg-background fixed right-0 bottom-0 left-0 z-10 flex flex-row gap-2 border-t px-4 py-4 md:px-8"
+        )}
+      >
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

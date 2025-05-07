@@ -49,7 +49,6 @@ export function DialogAgent({
   isCardLight = false,
 }: DialogAgentProps) {
   const isMobile = useBreakpoint(768)
-  const { user } = useUser()
 
   const handleOpenChange = (open: boolean) => {
     if (!isAvailable) {
@@ -88,7 +87,6 @@ export function DialogAgent({
       mcp_config={mcp_config}
       onAgentClick={onAgentClick}
       randomAgents={randomAgents}
-      isMobile={isMobile}
     />
   )
 
