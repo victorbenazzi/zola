@@ -7,8 +7,6 @@ type SubMenuProps = {
 }
 
 export function SubMenu({ hoveredModelData, dropdownRect }: SubMenuProps) {
-  console.log(hoveredModelData.api_sdk)
-
   return (
     <div
       className="bg-popover fixed z-[51] w-[280px] rounded-md border p-3 shadow-md"

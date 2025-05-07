@@ -19,7 +19,7 @@ import type { Model } from "@/lib/config"
 import { MODELS_FREE, MODELS_OPTIONS, MODELS_PRO } from "@/lib/config"
 import { cn } from "@/lib/utils"
 import { CaretDown, Star } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { SubMenu } from "./sub-menu"
 
@@ -41,12 +41,19 @@ export function ModelSelector({
 
   const [hoveredModel, setHoveredModel] = useState<string | null>(null)
   const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null)
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  // Use ref instead of state for portal element
+  const portalRef = useRef<HTMLElement | null>(null)
 
   // Setup portal element on mount
   useEffect(() => {
-    setPortalElement(document.body)
+    portalRef.current = document.body
+
+    return () => {
+      // Force cleanup on unmount
+      setHoveredModel(null)
+    }
   }, [])
 
   // Find dropdown content and track its position
@@ -60,10 +67,44 @@ export function ModelSelector({
       }
     }
 
-    if (hoveredModel) {
+    if (hoveredModel && isDropdownOpen) {
       updateDropdownRect()
+
+      // Add listener for window resize to update position
+      window.addEventListener("resize", updateDropdownRect)
+      return () => {
+        window.removeEventListener("resize", updateDropdownRect)
+      }
     }
-  }, [hoveredModel])
+  }, [hoveredModel, isDropdownOpen])
+
+  // Close submenu when dropdown closes
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      setHoveredModel(null)
+    }
+  }, [isDropdownOpen])
+
+  // Add this effect after the existing useEffect hooks
+  // This will show the submenu for the current model when the dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen && selectedModelId) {
+      // Small delay to ensure dropdown is rendered
+      const timer = setTimeout(() => {
+        setHoveredModel(selectedModelId)
+
+        // Update rectangle position
+        const dropdownEl = document.querySelector(
+          "[data-radix-popper-content-wrapper]"
+        )
+        if (dropdownEl) {
+          setDropdownRect(dropdownEl.getBoundingClientRect())
+        }
+      }, 50)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isDropdownOpen, selectedModelId])
 
   const renderModelItem = (model: Model) => {
     const isPro = MODELS_PRO.some((proModel) => proModel.id === model.id)
@@ -79,6 +120,8 @@ export function ModelSelector({
           setSelectedModelId(model.id)
           if (isMobile) {
             setIsDrawerOpen(false)
+          } else {
+            setIsDropdownOpen(false)
           }
         }}
       >
@@ -136,7 +179,15 @@ export function ModelSelector({
 
   return (
     <div>
-      <DropdownMenu onOpenChange={(open) => !open && setHoveredModel(null)}>
+      <DropdownMenu
+        open={isDropdownOpen}
+        onOpenChange={(open) => {
+          setIsDropdownOpen(open)
+          if (!open) {
+            setHoveredModel(null)
+          }
+        }}
+      >
         <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
         <DropdownMenuContent
           className="flex max-h-[320px] w-[300px] flex-col space-y-0.5 overflow-y-auto"
@@ -153,9 +204,17 @@ export function ModelSelector({
               )}
               onSelect={() => {
                 setSelectedModelId(model.id)
+                setIsDropdownOpen(false)
               }}
               onFocus={() => {
-                setHoveredModel(model.id)
+                if (isDropdownOpen) {
+                  setHoveredModel(model.id)
+                }
+              }}
+              onMouseEnter={() => {
+                if (isDropdownOpen) {
+                  setHoveredModel(model.id)
+                }
               }}
             >
               <div className="flex items-center gap-3">
@@ -175,16 +234,17 @@ export function ModelSelector({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {portalElement &&
+      {portalRef.current &&
         hoveredModel &&
         hoveredModelData &&
         dropdownRect &&
+        isDropdownOpen &&
         createPortal(
           <SubMenu
             hoveredModelData={hoveredModelData}
             dropdownRect={dropdownRect}
           />,
-          portalElement
+          portalRef.current
         )}
     </div>
   )
