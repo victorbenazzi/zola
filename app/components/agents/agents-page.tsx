@@ -116,7 +116,6 @@ export function AgentsPage({ agents }: AgentsPageProps) {
         {researchAgent && (
           <ResearchSection
             researchAgent={researchAgent}
-            agents={agents}
             handleAgentClick={handleAgentClick}
             openAgentId={openAgentId}
             setOpenAgentId={setOpenAgentId}

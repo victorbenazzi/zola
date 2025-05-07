@@ -76,27 +76,6 @@ export function DialogAgent({
     />
   )
 
-  if (!user) {
-    return (
-      <Popover>
-        <PopoverTrigger className="flex w-full">
-          {trigger || (
-            <AgentCard
-              id={id}
-              name={name}
-              description={description}
-              avatar_url={avatar_url}
-              className={className}
-              isAvailable={isAvailable}
-              isLight={isCardLight}
-            />
-          )}
-        </PopoverTrigger>
-        <PopoverContentAuth />
-      </Popover>
-    )
-  }
-
   const renderContent = (isMobile?: boolean) => (
     <AgentDetail
       slug={slug}
@@ -128,7 +107,7 @@ export function DialogAgent({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent
-        className="[&>button:last-child]:bg-background max-w-[600px] gap-0 overflow-hidden rounded-3xl p-0 shadow-xs [&>button:last-child]:rounded-full [&>button:last-child]:p-1"
+        className="[&>button:last-child]:bg-background flex gap-0 overflow-hidden rounded-3xl p-0 shadow-xs [&>button:last-child]:rounded-full [&>button:last-child]:p-1"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {renderContent()}
