@@ -48,6 +48,14 @@ export const MODELS_FREE = [
         id: "file-upload",
         enabled: true,
       },
+      {
+        id: "reasoning",
+        enabled: true,
+      },
+      {
+        id: "tool-use",
+        enabled: false,
+      },
     ],
     api_sdk: "deepseek/deepseek-r1:free", // this is a special case for openrouter
     description:
@@ -61,6 +69,10 @@ export const MODELS_FREE = [
     features: [
       {
         id: "file-upload",
+        enabled: true,
+      },
+      {
+        id: "tool-use",
         enabled: true,
       },
     ],
@@ -78,13 +90,16 @@ export const MODELS_FREE = [
         id: "file-upload",
         enabled: false,
       },
+      {
+        id: "tool-use",
+        enabled: true,
+      },
     ],
     api_sdk: openproviders("mistral-large-latest"),
     description:
       "Fine-tuned for chat. A lighter, faster option for everyday use.",
     icon: Mistral,
   },
-  // free for now
   {
     id: "gpt-4.1-nano",
     name: "GPT-4.1 Nano",
@@ -92,6 +107,10 @@ export const MODELS_FREE = [
     features: [
       {
         id: "file-upload",
+        enabled: true,
+      },
+      {
+        id: "tool-use",
         enabled: true,
       },
     ],
@@ -112,6 +131,10 @@ export const MODELS_PRO = [
         id: "file-upload",
         enabled: true,
       },
+      {
+        id: "tool-use",
+        enabled: true,
+      },
     ],
     api_sdk: openproviders("gpt-4.1"),
     description:
@@ -127,27 +150,16 @@ export const MODELS_PRO = [
         id: "file-upload",
         enabled: true,
       },
+      {
+        id: "tool-use",
+        enabled: true,
+      },
     ],
     api_sdk: openproviders("gpt-4.1-mini"),
     description:
       "Fast and smart — a great balance for most tasks. Outperforms GPT‑4o mini.",
     icon: OpenAI,
   },
-  // {
-  //   id: "gpt-4.1-nano",
-  //   name: "GPT-4.1 Nano",
-  //   provider: "openai",
-  //   features: [
-  //     {
-  //       id: "file-upload",
-  //       enabled: true,
-  //     },
-  //   ],
-  //   api_sdk: openproviders("gpt-4.1-nano"),
-  //   description:
-  //     "Ultra fast and cheap. Ideal for simple tasks, summaries, or classification.",
-  //   icon: OpenAI,
-  // },
   {
     id: "gemini-2.5-pro-preview-03-25",
     name: "Gemini 2.5 Pro",
