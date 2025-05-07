@@ -138,7 +138,6 @@ export function AgentsPage({ agents }: AgentsPageProps) {
                 name={agent.name}
                 description={agent.description}
                 avatar_url={agent.avatar_url}
-                creator_id="Zola"
                 example_inputs={agent.example_inputs || []}
                 isAvailable={true}
                 onAgentClick={handleAgentClick}
@@ -166,7 +165,6 @@ export function AgentsPage({ agents }: AgentsPageProps) {
                 description={agent.description}
                 avatar_url={agent?.avatar_url}
                 example_inputs={agent.example_inputs || []}
-                creator_id="Zola"
                 slug={agent.slug}
                 isAvailable={false}
                 className="pointer-events-none opacity-50 select-none"

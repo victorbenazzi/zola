@@ -15,7 +15,6 @@ type DialogAgentProps = {
   description: string
   avatar_url?: string | null
   example_inputs: string[]
-  creator_id?: string
   className?: string
   isAvailable: boolean
   slug: string
@@ -27,13 +26,13 @@ type DialogAgentProps = {
   system_prompt?: string
   tools?: string[]
   mcp_config?: Tables<"agents">["mcp_config"]
+  isCardLight?: boolean
 }
 
 export function DialogAgent({
   id,
   name,
   description,
-  creator_id,
   avatar_url,
   example_inputs,
   slug,
@@ -47,6 +46,7 @@ export function DialogAgent({
   trigger = null,
   tools,
   mcp_config,
+  isCardLight = false,
 }: DialogAgentProps) {
   const isMobile = useBreakpoint(768)
   const { user } = useUser()
@@ -72,6 +72,7 @@ export function DialogAgent({
       onClick={() => handleOpenChange(true)}
       tools={tools}
       mcp_config={mcp_config}
+      isLight={isCardLight}
     />
   )
 
@@ -87,6 +88,7 @@ export function DialogAgent({
               avatar_url={avatar_url}
               className={className}
               isAvailable={isAvailable}
+              isLight={isCardLight}
             />
           )}
         </PopoverTrigger>

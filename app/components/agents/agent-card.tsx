@@ -16,6 +16,7 @@ type AgentCardProps = {
   system_prompt?: string
   tools?: string[]
   mcp_config?: Tables<"agents">["mcp_config"] | null
+  isLight?: boolean
 }
 
 export function AgentCard({
@@ -28,6 +29,7 @@ export function AgentCard({
   system_prompt,
   tools,
   mcp_config,
+  isLight = false,
 }: AgentCardProps) {
   return (
     <button
@@ -66,25 +68,27 @@ export function AgentCard({
           {description}
         </p>
 
-        {system_prompt && (
+        {!isLight && system_prompt && (
           <p className="text-muted-foreground line-clamp-2 text-left font-mono text-sm">
             {system_prompt}
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2 text-xs">
-          {tools && tools.length > 0 ? (
-            <span className="text-muted-foreground">
-              tools: {tools.join(", ")}
-            </span>
-          ) : mcp_config ? (
-            <span className="text-muted-foreground">
-              mcp: {mcp_config.server}
-            </span>
-          ) : (
-            <span className="text-muted-foreground">tools: none</span>
-          )}
-        </div>
+        {!isLight && (
+          <div className="flex flex-wrap gap-2 text-xs">
+            {tools && tools.length > 0 ? (
+              <span className="text-muted-foreground">
+                tools: {tools.join(", ")}
+              </span>
+            ) : mcp_config ? (
+              <span className="text-muted-foreground">
+                mcp: {mcp_config.server}
+              </span>
+            ) : (
+              <span className="text-muted-foreground">tools: none</span>
+            )}
+          </div>
+        )}
       </div>
     </button>
   )
