@@ -233,7 +233,30 @@ To run the seed script:
 
 ### Storage Setup
 
-Create the buckets `chat-attachments` and `avatars`.
+Create the buckets `chat-attachments` and `avatars` in your Supabase dashboard:
+
+1. Go to Storage in your Supabase dashboard
+2. Click "New bucket" and create two buckets: `chat-attachments` and `avatars`
+3. Configure public access permissions for both buckets
+
+#### Agent Avatar Configuration
+
+For agent profile pictures to work properly:
+
+1. Create an `agents` folder inside your `avatars` bucket:
+
+   - Navigate to the `avatars` bucket
+   - Click "Create folder" and name it `agents`
+
+2. Upload agent avatar images
+
+3. Set up public access for the avatars bucket:
+   - Go to "Configuration" tab for the `avatars` bucket
+   - Under "Row Level Security (RLS)" ensure it's disabled or create a policy:
+   ```sql
+   CREATE POLICY "Public Read Access" ON storage.objects
+   FOR SELECT USING (bucket_id = 'avatars');
+   ```
 
 ## Local Installation
 
