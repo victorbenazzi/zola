@@ -1,6 +1,14 @@
 "use client"
 
+import { useBreakpoint } from "@/app/hooks/use-breakpoint"
 import { Button } from "@/components/ui/button"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +29,6 @@ type ModelSelectorProps = {
   className?: string
 }
 
-// @todo: add drawer on mobile
 export function ModelSelector({
   selectedModelId,
   setSelectedModelId,
@@ -30,10 +37,12 @@ export function ModelSelector({
   const currentModel = MODELS_OPTIONS.find(
     (model) => model.id === selectedModelId
   )
+  const isMobile = useBreakpoint(768)
 
   const [hoveredModel, setHoveredModel] = useState<string | null>(null)
   const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   // Setup portal element on mount
   useEffect(() => {
@@ -60,17 +69,17 @@ export function ModelSelector({
     const isPro = MODELS_PRO.some((proModel) => proModel.id === model.id)
 
     return (
-      <DropdownMenuItem
+      <div
         key={model.id}
         className={cn(
           "flex w-full items-center justify-between px-3 py-2",
           selectedModelId === model.id && "bg-accent"
         )}
-        onSelect={() => {
+        onClick={() => {
           setSelectedModelId(model.id)
-        }}
-        onFocus={() => {
-          setHoveredModel(model.id)
+          if (isMobile) {
+            setIsDrawerOpen(false)
+          }
         }}
       >
         <div className="flex items-center gap-3">
@@ -85,7 +94,7 @@ export function ModelSelector({
             <span>Pro</span>
           </div>
         )}
-      </DropdownMenuItem>
+      </div>
     )
   }
 
@@ -96,28 +105,73 @@ export function ModelSelector({
 
   const models = [...MODELS_FREE, ...MODELS_PRO] as Model[]
 
+  const trigger = (
+    <Button
+      variant="outline"
+      className={cn("dark:bg-secondary justify-between", className)}
+    >
+      <div className="flex items-center gap-2">
+        {currentModel?.icon && <currentModel.icon className="size-5" />}
+        <span>{currentModel?.name}</span>
+      </div>
+      <CaretDown className="size-4 opacity-50" />
+    </Button>
+  )
+
+  if (isMobile) {
+    return (
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Select Model</DrawerTitle>
+          </DrawerHeader>
+          <div className="flex flex-col space-y-0.5 overflow-y-auto px-4 pb-6">
+            {models.map((model) => renderModelItem(model))}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
+
   return (
     <div>
       <DropdownMenu onOpenChange={(open) => !open && setHoveredModel(null)}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn("dark:bg-secondary justify-between", className)}
-          >
-            <div className="flex items-center gap-2">
-              {currentModel?.icon && <currentModel.icon className="size-5" />}
-              <span>{currentModel?.name}</span>
-            </div>
-            <CaretDown className="size-4 opacity-50" />
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
         <DropdownMenuContent
           className="flex max-h-[320px] w-[300px] flex-col space-y-0.5 overflow-y-auto"
           align="start"
           sideOffset={4}
           forceMount
         >
-          {models.map((model) => renderModelItem(model))}
+          {models.map((model) => (
+            <DropdownMenuItem
+              key={model.id}
+              className={cn(
+                "flex w-full items-center justify-between px-3 py-2",
+                selectedModelId === model.id && "bg-accent"
+              )}
+              onSelect={() => {
+                setSelectedModelId(model.id)
+              }}
+              onFocus={() => {
+                setHoveredModel(model.id)
+              }}
+            >
+              <div className="flex items-center gap-3">
+                {model?.icon && <model.icon className="size-5" />}
+                <div className="flex flex-col gap-0">
+                  <span className="text-sm">{model.name}</span>
+                </div>
+              </div>
+              {MODELS_PRO.some((proModel) => proModel.id === model.id) && (
+                <div className="border-input bg-accent text-muted-foreground flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-medium">
+                  <Star className="size-2" />
+                  <span>Pro</span>
+                </div>
+              )}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
 
