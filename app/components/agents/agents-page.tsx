@@ -104,6 +104,9 @@ export function AgentsPage({ agents }: AgentsPageProps) {
                     setOpenAgentId(open ? agent.id : null)
                   }
                   randomAgents={otherGithubAgents}
+                  tools={agent.tools || []}
+                  mcp_config={agent.mcp_config}
+                  system_prompt={agent.system_prompt}
                 />
               ))}
             </div>
@@ -142,6 +145,9 @@ export function AgentsPage({ agents }: AgentsPageProps) {
                 isOpen={openAgentId === agent.id}
                 onOpenChange={(open) => setOpenAgentId(open ? agent.id : null)}
                 randomAgents={randomAgents}
+                system_prompt={agent.system_prompt}
+                tools={agent.tools || []}
+                mcp_config={agent.mcp_config}
               />
             ))}
           </div>

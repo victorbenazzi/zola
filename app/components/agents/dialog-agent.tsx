@@ -1,6 +1,7 @@
 import { useBreakpoint } from "@/app/hooks/use-breakpoint"
 import { useUser } from "@/app/providers/user-provider"
 import { AgentSummary } from "@/app/types/agent"
+import type { Tables } from "@/app/types/database.types"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
@@ -23,6 +24,9 @@ type DialogAgentProps = {
   onOpenChange: (open: boolean) => void
   randomAgents: AgentSummary[]
   trigger?: React.ReactNode
+  system_prompt?: string
+  tools?: string[]
+  mcp_config?: Tables<"agents">["mcp_config"]
 }
 
 export function DialogAgent({
@@ -33,6 +37,7 @@ export function DialogAgent({
   avatar_url,
   example_inputs,
   slug,
+  system_prompt,
   className,
   isAvailable,
   onAgentClick,
@@ -40,6 +45,8 @@ export function DialogAgent({
   onOpenChange,
   randomAgents,
   trigger = null,
+  tools,
+  mcp_config,
 }: DialogAgentProps) {
   const isMobile = useBreakpoint(768)
   const { user } = useUser()
@@ -58,11 +65,13 @@ export function DialogAgent({
       id={id}
       name={name}
       description={description}
-      creator_id={creator_id}
       avatar_url={avatar_url}
       className={className}
       isAvailable={isAvailable}
+      system_prompt={system_prompt}
       onClick={() => handleOpenChange(true)}
+      tools={tools}
+      mcp_config={mcp_config}
     />
   )
 
@@ -75,7 +84,6 @@ export function DialogAgent({
               id={id}
               name={name}
               description={description}
-              creator_id={creator_id}
               avatar_url={avatar_url}
               className={className}
               isAvailable={isAvailable}
@@ -94,8 +102,8 @@ export function DialogAgent({
       name={name}
       description={description}
       example_inputs={example_inputs}
-      creator_id={creator_id}
       avatar_url={avatar_url}
+      // system_prompt={system_prompt}
       onAgentClick={onAgentClick}
       randomAgents={randomAgents}
       isMobile={isMobile}
