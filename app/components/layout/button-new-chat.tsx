@@ -16,9 +16,6 @@ export function ButtonNewChat() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log("Key pressed:", e.key, "Meta:", e.metaKey, "Alt:", e.altKey)
-
-      // Add keyboard shortcut for ⌘⇧U to create new chat
       if ((e.key === "u" || e.key === "U") && e.metaKey && e.shiftKey) {
         e.preventDefault()
         router.push("/")
