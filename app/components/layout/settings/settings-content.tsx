@@ -83,7 +83,7 @@ export function SettingsContent({
   return (
     <div
       className={cn(
-        "max-h-[70vh] overflow-y-auto",
+        "flex w-full flex-col overflow-y-auto",
         isDrawer ? "p-0 pb-16" : "py-0"
       )}
     >
@@ -99,11 +99,14 @@ export function SettingsContent({
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as TabType)}
-        className={cn("w-full", isDrawer ? "" : "flex min-h-[400px]")}
+        className={cn(
+          "flex w-full flex-row",
+          isDrawer ? "" : "flex min-h-[400px]"
+        )}
       >
         {isDrawer ? (
           // Mobile version - tabs on top
-          <div className="px-6 py-4">
+          <div className="w-full px-6 py-4">
             <TabsList className="mb-4 grid w-full grid-cols-3">
               <TabsTrigger value="general" className="flex items-center gap-2">
                 <GearSix className="size-4" />
@@ -130,19 +133,19 @@ export function SettingsContent({
               {/* User Info */}
               <div className="mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className="bg-muted flex h-16 w-16 items-center justify-center overflow-hidden rounded-full">
+                  <div className="bg-muted flex items-center justify-center overflow-hidden rounded-full">
                     {user?.profile_image ? (
                       <Avatar>
                         <AvatarImage
                           src={user.profile_image}
-                          className="object-cover"
+                          className="size-16 object-cover"
                         />
                         <AvatarFallback>
                           {user?.display_name?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                     ) : (
-                      <User className="text-muted-foreground size-8" />
+                      <User className="text-muted-foreground size-16" />
                     )}
                   </div>
                   <div>
@@ -262,12 +265,8 @@ export function SettingsContent({
         ) : (
           // Desktop version - tabs on left
           <>
-            <TabsList className="bg-secondary border-border flex w-48 flex-col items-start rounded-none border-r p-0">
-              <div className="border-border flex w-full items-center border-b p-4">
-                <h2 className="text-lg font-medium">Settings</h2>
-              </div>
-
-              <div className="flex w-full flex-col gap-1 p-2">
+            <TabsList className="block w-48 rounded-none bg-transparent px-3 pt-4">
+              <div className="flex w-full flex-col gap-1">
                 <TabsTrigger
                   value="general"
                   className="w-full justify-start rounded-md px-3 py-2 text-left"
@@ -301,25 +300,24 @@ export function SettingsContent({
             </TabsList>
 
             {/* Desktop tabs content */}
-            <div className="flex-1 overflow-auto p-6">
+            <div className="flex-1 overflow-auto px-6 pt-4">
               <TabsContent value="general" className="mt-0 space-y-6">
                 {/* User Info */}
                 <div>
-                  <h3 className="mb-4 text-lg font-medium">Account</h3>
                   <div className="flex items-center space-x-4">
-                    <div className="bg-muted flex h-16 w-16 items-center justify-center overflow-hidden rounded-full">
+                    <div className="bg-muted flex items-center justify-center overflow-hidden rounded-full">
                       {user?.profile_image ? (
                         <Avatar>
                           <AvatarImage
                             src={user.profile_image}
-                            className="object-cover"
+                            className="size-10 object-cover"
                           />
                           <AvatarFallback>
                             {user?.display_name?.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                       ) : (
-                        <User className="text-muted-foreground size-8" />
+                        <User className="text-muted-foreground size-10" />
                       )}
                     </div>
                     <div>
@@ -376,8 +374,6 @@ export function SettingsContent({
               </TabsContent>
 
               <TabsContent value="appearance" className="mt-0 space-y-6">
-                <h3 className="mb-4 text-lg font-medium">Appearance</h3>
-
                 {/* Theme Selection */}
                 <div>
                   <h4 className="mb-3 text-sm font-medium">Theme</h4>
@@ -421,7 +417,6 @@ export function SettingsContent({
               </TabsContent>
 
               <TabsContent value="connections" className="mt-0">
-                <h3 className="mb-4 text-lg font-medium">Connections</h3>
                 <div className="py-8 text-center">
                   <PlugsConnected className="text-muted-foreground mx-auto mb-2 size-12" />
                   <h4 className="mb-1 text-sm font-medium">

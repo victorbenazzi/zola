@@ -53,7 +53,7 @@ export function SystemPromptSection() {
 
   return (
     <div className="border-border border-t">
-      <div className="px-6 py-4">
+      <div className="w-full py-4">
         <Label htmlFor="system-prompt" className="mb-3 text-sm font-medium">
           Default system prompt
         </Label>

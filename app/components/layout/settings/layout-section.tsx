@@ -243,7 +243,7 @@ export function LayoutSection() {
 
   return (
     <div className="border-border border-t">
-      <div className="px-6 py-4">
+      <div className="py-4">
         <h3 className="mb-3 text-sm font-medium">Layout</h3>
         <div className="grid grid-cols-2 gap-3">
           {OPTIONS.map((option) => (
