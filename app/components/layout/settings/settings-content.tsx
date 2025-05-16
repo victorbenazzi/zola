@@ -107,7 +107,7 @@ export function SettingsContent({
         {isDrawer ? (
           // Mobile version - tabs on top
           <div className="w-full px-6 py-4">
-            <TabsList className="mb-4 grid w-full grid-cols-3">
+            <TabsList className="mb-4 grid w-full grid-cols-3 bg-transparent">
               <TabsTrigger value="general" className="flex items-center gap-2">
                 <GearSix className="size-4" />
                 <span>General</span>
@@ -135,17 +135,17 @@ export function SettingsContent({
                 <div className="flex items-center space-x-4">
                   <div className="bg-muted flex items-center justify-center overflow-hidden rounded-full">
                     {user?.profile_image ? (
-                      <Avatar>
+                      <Avatar className="size-10">
                         <AvatarImage
                           src={user.profile_image}
-                          className="size-16 object-cover"
+                          className="object-cover"
                         />
                         <AvatarFallback>
                           {user?.display_name?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                     ) : (
-                      <User className="text-muted-foreground size-16" />
+                      <User className="text-muted-foreground size-10" />
                     )}
                   </div>
                   <div>
@@ -160,45 +160,41 @@ export function SettingsContent({
               </div>
 
               {/* Model Selection */}
-              <div className="border-border border-t">
-                <div className="py-4">
-                  <h3 className="mb-3 text-sm font-medium">Preferred model</h3>
-                  <div className="relative">
-                    <ModelSelector
-                      selectedModelId={selectedModelId}
-                      setSelectedModelId={handleModelSelection}
-                      className="w-full"
-                    />
-                  </div>
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    This model will be used by default for new conversations.
-                  </p>
+              <div className="py-4">
+                <h3 className="mb-3 text-sm font-medium">Preferred model</h3>
+                <div className="relative">
+                  <ModelSelector
+                    selectedModelId={selectedModelId}
+                    setSelectedModelId={handleModelSelection}
+                    className="w-full"
+                  />
                 </div>
+                <p className="text-muted-foreground mt-2 text-xs">
+                  This model will be used by default for new conversations.
+                </p>
               </div>
 
               {/* System Prompt */}
               <SystemPromptSection />
 
               {/* Sign Out */}
-              <div className="border-border border-t">
-                <div className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium">Account</h3>
-                      <p className="text-muted-foreground text-xs">
-                        Log out on this device
-                      </p>
-                    </div>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleSignOut}
-                    >
-                      <SignOut className="size-4" />
-                      <span>Sign out</span>
-                    </Button>
+              <div className="py-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Account</h3>
+                    <p className="text-muted-foreground text-xs">
+                      Log out on this device
+                    </p>
                   </div>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={handleSignOut}
+                  >
+                    <SignOut className="size-4" />
+                    <span>Sign out</span>
+                  </Button>
                 </div>
               </div>
             </TabsContent>
@@ -240,17 +236,12 @@ export function SettingsContent({
               </div>
 
               {/* Layout */}
-              <div className="border-border border-t">
-                <div className="py-4">
-                  <LayoutSection />
-                </div>
+              <div className="py-4">
+                <LayoutSection />
               </div>
             </TabsContent>
 
-            <TabsContent
-              value="connections"
-              className="border-border border-t py-4"
-            >
+            <TabsContent value="connections" className="py-4">
               <div className="py-8 text-center">
                 <PlugsConnected className="text-muted-foreground mx-auto mb-2 size-12" />
                 <h3 className="mb-1 text-sm font-medium">
@@ -307,17 +298,17 @@ export function SettingsContent({
                   <div className="flex items-center space-x-4">
                     <div className="bg-muted flex items-center justify-center overflow-hidden rounded-full">
                       {user?.profile_image ? (
-                        <Avatar>
+                        <Avatar className="size-12">
                           <AvatarImage
                             src={user.profile_image}
-                            className="size-10 object-cover"
+                            className="object-cover"
                           />
                           <AvatarFallback>
                             {user?.display_name?.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                       ) : (
-                        <User className="text-muted-foreground size-10" />
+                        <User className="text-muted-foreground size-12" />
                       )}
                     </div>
                     <div>
@@ -352,24 +343,22 @@ export function SettingsContent({
                 </div>
 
                 {/* Sign Out */}
-                <div className="border-border border-t pt-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-medium">Sign out</h3>
-                      <p className="text-muted-foreground text-xs">
-                        Log out on this device
-                      </p>
-                    </div>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex items-center gap-2"
-                      onClick={handleSignOut}
-                    >
-                      <SignOut className="size-4" />
-                      <span>Sign out</span>
-                    </Button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium">Sign out</h3>
+                    <p className="text-muted-foreground text-xs">
+                      Log out on this device
+                    </p>
                   </div>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={handleSignOut}
+                  >
+                    <SignOut className="size-4" />
+                    <span>Sign out</span>
+                  </Button>
                 </div>
               </TabsContent>
 
@@ -408,12 +397,7 @@ export function SettingsContent({
                     ))}
                   </div>
                 </div>
-
-                {/* Layout */}
-                <div>
-                  <h4 className="mb-3 text-sm font-medium">Layout</h4>
-                  <LayoutSection />
-                </div>
+                <LayoutSection />
               </TabsContent>
 
               <TabsContent value="connections" className="mt-0">
