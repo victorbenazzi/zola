@@ -18,7 +18,7 @@ import {
 import { fetchClient } from "@/lib/fetch"
 import { Attachment } from "@/lib/file-handling"
 import { API_ROUTE_CHAT } from "@/lib/routes"
-import { XAICitation } from "@/app/types/citation"
+import { XAICitation } from "@/app/types/citation.js"
 import { cn } from "@/lib/utils"
 import { useChat } from "@ai-sdk/react"
 import { AnimatePresence, motion } from "motion/react"
