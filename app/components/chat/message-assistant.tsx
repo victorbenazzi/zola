@@ -62,6 +62,11 @@ export function MessageAssistant({
           <ToolInvocation toolInvocations={toolInvocationParts} />
         )}
 
+        {isLiveSearch && (
+          <div className="mb-2 flex items-center gap-1 text-xs text-blue-600">
+            <span>Live Search powered by xAI</span>
+          </div>
+        )}
         {contentNullOrEmpty ? null : (
           <MessageContent
             className={cn(
@@ -70,11 +75,6 @@ export function MessageAssistant({
             )}
             markdown={true}
           >
-            {isLiveSearch && (
-              <div className="mb-2 flex items-center gap-1 text-xs text-blue-600">
-                <span>Live Search powered by xAI</span>
-              </div>
-            )}
             {children}
           </MessageContent>
         )}
