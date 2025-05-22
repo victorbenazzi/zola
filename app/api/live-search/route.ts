@@ -1,6 +1,7 @@
 // app/api/live-search/route.ts
 
 import { logUserMessage, storeAssistantMessage, validateAndTrackUsage } from "@/app/api/chat/api"
+import { XAICitation } from "@/app/types/citation"
 import { validateUserIdentity } from "@/lib/server/api"
 
 export async function POST(request: Request) {
@@ -41,6 +42,14 @@ export async function POST(request: Request) {
       })
     }
 
+    if (!process.env.XAI_API_KEY) {
+      console.error("Missing XAI_API_KEY environment variable")
+      return new Response(
+        JSON.stringify({ error: "Live Search configuration error" }),
+        { status: 500 }
+      )
+    }
+
     const response = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -72,7 +81,7 @@ export async function POST(request: Request) {
               text: data.choices[0].message.content
             },
             ...(data.choices[0].message.citations ? 
-              data.choices[0].message.citations.map(citation => ({
+              data.choices[0].message.citations.map((citation: XAICitation) => ({
                 type: "source",
                 source: citation
               })) : [])
