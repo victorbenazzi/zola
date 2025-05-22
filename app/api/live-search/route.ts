@@ -1,22 +1,45 @@
 // app/api/live-search/route.ts
 
+import { logUserMessage, storeAssistantMessage, validateAndTrackUsage } from "@/app/api/chat/api"
 import { validateUserIdentity } from "@/lib/server/api"
 
 export async function POST(request: Request) {
   try {
-    const { userId, isAuthenticated, messages, searchOptions } =
+    const { userId, isAuthenticated, messages, chatId, searchOptions } =
       await request.json()
 
-    if (!userId || !messages) {
+    if (!userId || !messages || !chatId) {
       return new Response(
-        JSON.stringify({ error: "Missing userId or messages" }),
+        JSON.stringify({ error: "Missing userId, messages, or chatId" }),
         {
           status: 400,
         }
       )
     }
 
-    await validateUserIdentity(userId, isAuthenticated)
+    const supabase = await validateAndTrackUsage({
+      userId,
+      model: "grok-3-latest", // Default model for live search
+      isAuthenticated,
+    })
+
+    if (!supabase) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      })
+    }
+
+    const userMessage = messages[messages.length - 1]
+    if (userMessage?.role === "user") {
+      await logUserMessage({
+        supabase,
+        userId,
+        chatId,
+        content: userMessage.content,
+        model: "grok-3-latest",
+        isAuthenticated,
+      })
+    }
 
     const response = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
@@ -35,8 +58,30 @@ export async function POST(request: Request) {
       }),
     })
 
-    const json = await response.json()
-    return new Response(JSON.stringify(json), { status: response.status })
+    const data = await response.json()
+    
+    if (data.choices && data.choices.length > 0) {
+      await storeAssistantMessage({
+        supabase,
+        chatId,
+        messages: [{
+          role: "assistant",
+          content: [
+            {
+              type: "text",
+              text: data.choices[0].message.content
+            },
+            ...(data.choices[0].message.citations ? 
+              data.choices[0].message.citations.map(citation => ({
+                type: "source",
+                source: citation
+              })) : [])
+          ]
+        }]
+      })
+    }
+
+    return new Response(JSON.stringify(data), { status: response.status })
   } catch (error) {
     console.error("Live Search error:", error)
     return new Response(JSON.stringify({ error: "Live Search failed" }), {

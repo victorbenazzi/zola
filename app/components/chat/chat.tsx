@@ -213,7 +213,7 @@ export function Chat() {
           parts: data.choices[0].message.citations ? 
             [
               { type: "text", text: data.choices[0].message.content },
-              ...data.choices[0].message.citations.map((citation: any) => ({
+              ...data.choices[0].message.citations.map((citation: XAICitation) => ({
                 type: "source",
                 source: citation
               }))

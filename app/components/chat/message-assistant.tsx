@@ -21,6 +21,7 @@ type MessageAssistantProps = {
   onReload?: () => void
   parts?: MessageAISDK["parts"]
   status?: "streaming" | "ready" | "submitted" | "error"
+  isLiveSearch?: boolean
 }
 
 export function MessageAssistant({
@@ -32,6 +33,7 @@ export function MessageAssistant({
   onReload,
   parts,
   status,
+  isLiveSearch,
 }: MessageAssistantProps) {
   const sources = getSources(parts)
 
@@ -68,6 +70,11 @@ export function MessageAssistant({
             )}
             markdown={true}
           >
+            {isLiveSearch && (
+              <div className="mb-2 flex items-center gap-1 text-xs text-blue-600">
+                <span>Live Search powered by xAI</span>
+              </div>
+            )}
             {children}
           </MessageContent>
         )}
