@@ -8,12 +8,12 @@ import { AgentProvider } from "@/lib/agent-store/provider"
 import { ChatsProvider } from "@/lib/chat-store/chats/provider"
 import { ChatSessionProvider } from "@/lib/chat-store/session/provider"
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/config"
+import { UserPreferencesProvider } from "@/lib/user-preference-store/provider"
 import { UserProvider } from "@/lib/user-store/provider"
 import { getUserProfile } from "@/lib/user/api"
 import { ThemeProvider } from "next-themes"
 import Script from "next/script"
 import { LayoutClient } from "./layout-client"
-import { UserPreferencesProvider } from "./providers/user-preferences-provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
