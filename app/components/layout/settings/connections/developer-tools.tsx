@@ -1,158 +1,141 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Save } from "lucide-react"
+import { toast } from "@/components/ui/toast"
+import { useEffect, useState } from "react"
 
-interface ApiKeys {
-  [provider: string]: string
+interface DeveloperTool {
+  id: string
+  name: string
+  icon: string
+  description: string
+  envKeys: string[]
+  connected: boolean
+  maskedKey: string | null
+  sampleEnv: string
 }
 
-const PROVIDERS = [
-  { id: "openai", name: "OpenAI", placeholder: "sk-..." },
-  { id: "mistral", name: "Mistral AI", placeholder: "..." },
-  { id: "anthropic", name: "Anthropic", placeholder: "sk-ant-..." },
-  { id: "google", name: "Google AI", placeholder: "..." },
-  { id: "xai", name: "xAI (Grok)", placeholder: "xai-..." },
-]
+interface DeveloperToolsResponse {
+  tools: DeveloperTool[]
+}
 
 export function DeveloperTools() {
-  const [keys, setKeys] = useState<ApiKeys>({})
-  const [editingKeys, setEditingKeys] = useState<ApiKeys>({})
-  const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set())
+  const [tools, setTools] = useState<DeveloperTool[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
 
   useEffect(() => {
-    fetchKeys()
+    const fetchTools = async () => {
+      try {
+        const response = await fetch("/api/developer-tools")
+        if (response.ok) {
+          const data: DeveloperToolsResponse = await response.json()
+          setTools(data.tools)
+        }
+      } catch (error) {
+        console.error("Failed to fetch developer tools:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTools()
   }, [])
 
-  const fetchKeys = async () => {
+  const copyToClipboard = async (text: string) => {
     try {
-      const response = await fetch("/api/user-keys")
-      if (response.ok) {
-        const data = await response.json()
-        setKeys(data.keys || {})
-        setEditingKeys(data.keys || {})
-      }
+      await navigator.clipboard.writeText(text)
+      toast({
+        title: "Copied to clipboard",
+        status: "success",
+      })
     } catch (error) {
-      console.error("Error fetching keys:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleKeyChange = (provider: string, value: string) => {
-    setEditingKeys(prev => ({ ...prev, [provider]: value }))
-    const hasActualChanges = Object.entries({ ...editingKeys, [provider]: value }).some(
-      ([p, key]) => key && key.trim() && key !== keys[p] && key !== "••••••••••••••••"
-    )
-    setHasChanges(hasActualChanges)
-  }
-
-  const toggleVisibility = (provider: string) => {
-    setVisibleKeys(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(provider)) {
-        newSet.delete(provider)
-      } else {
-        newSet.add(provider)
-      }
-      return newSet
-    })
-  }
-
-  const saveKeys = async () => {
-    setSaving(true)
-    try {
-      const csrfResponse = await fetch("/api/csrf")
-      const { token } = await csrfResponse.json()
-
-      for (const [provider, apiKey] of Object.entries(editingKeys)) {
-        if (apiKey && apiKey.trim() && apiKey !== keys[provider] && apiKey !== "••••••••••••••••") {
-          const response = await fetch("/api/user-keys", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              provider,
-              apiKey: apiKey.trim(),
-              csrfToken: token,
-            }),
-          })
-
-          if (!response.ok) {
-            throw new Error(`Failed to save ${provider} key`)
-          }
-        }
-      }
-
-      setKeys(editingKeys)
-      setHasChanges(false)
-    } catch (error) {
-      console.error("Error saving keys:", error)
-    } finally {
-      setSaving(false)
+      console.error("Failed to copy to clipboard:", error)
+      toast({
+        title: "Failed to copy to clipboard",
+        status: "error",
+      })
     }
   }
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="py-8 text-center">
+        <div className="text-muted-foreground">Loading connections...</div>
+      </div>
+    )
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>API Keys</CardTitle>
-        <CardDescription>
-          Manage your personal API keys for AI providers. These keys will be used instead of shared keys when available.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {PROVIDERS.map((provider) => (
-          <div key={provider.id} className="space-y-2">
-            <Label htmlFor={provider.id}>{provider.name}</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Input
-                  id={provider.id}
-                  type={visibleKeys.has(provider.id) ? "text" : "password"}
-                  placeholder={keys[provider.id] ? "••••••••••••••••" : provider.placeholder}
-                  value={editingKeys[provider.id] || ""}
-                  onChange={(e) => handleKeyChange(provider.id, e.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => toggleVisibility(provider.id)}
-                >
-                  {visibleKeys.has(provider.id) ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
+    <div className="space-y-6 pb-8">
+      {/* Header */}
+      <div>
+        <h3 className="mb-2 text-lg font-medium">Developer Tool connections</h3>
+        <p className="text-muted-foreground text-sm">
+          Add API keys in .env.local to enable tools like Exa and GitHub. These
+          keys follow specific formats and are only used in development mode.
+        </p>
+      </div>
+
+      {/* Tools List */}
+      <div className="space-y-6">
+        {tools.map((tool) => (
+          <div key={tool.id} className="border-border rounded-lg border p-3">
+            <div className="space-y-4">
+              {/* Tool Header */}
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <h4 className="font-medium">{tool.name}</h4>
+                    {tool.connected ? (
+                      <span className="bg-secondary text-secondary-foreground flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                        Connected
+                      </span>
+                    ) : (
+                      <span className="bg-destructive/10 text-destructive flex items-center gap-1 rounded-full px-2 py-0.5 text-xs">
+                        Not connected
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-muted-foreground mb-3 text-sm">
+                    {tool.description}
+                  </p>
+
+                  {/* Connected State - Show Masked Key */}
+                  {tool.connected && tool.maskedKey && (
+                    <div className="flex flex-col gap-2">
+                      <div className="text-muted-foreground text-sm">
+                        Key detected:
+                      </div>
+                      <div className="text-muted-foreground bg-secondary mb-3 rounded px-3 py-2 font-mono text-xs">
+                        {tool.maskedKey}
+                      </div>
+                    </div>
                   )}
-                </Button>
+                </div>
+              </div>
+
+              {/* Required Keys Section - Always Show */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Required keys:</p>
+                <div className="relative">
+                  <pre className="bg-muted text-foreground overflow-x-auto rounded-md border p-3 font-mono text-xs">
+                    {tool.sampleEnv}
+                  </pre>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute top-2 right-2 h-6 px-2 text-xs"
+                    onClick={() => copyToClipboard(tool.sampleEnv)}
+                  >
+                    Copy to clipboard
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         ))}
-        
-        {hasChanges && (
-          <div className="pt-4">
-            <Button onClick={saveKeys} disabled={saving} className="w-full">
-              <Save className="h-4 w-4 mr-2" />
-              {saving ? "Saving..." : "Save API Keys"}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
