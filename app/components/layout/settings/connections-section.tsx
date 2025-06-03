@@ -5,6 +5,7 @@ import { toast } from "@/components/ui/toast"
 import { PlugsConnected } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { ProviderSettingsSection } from "./provider-settings-section"
+import { DeveloperTools } from "./connections/developer-tools"
 
 interface DeveloperTool {
   id: string
@@ -68,6 +69,8 @@ export function ConnectionsSection() {
 
   return (
     <div className="space-y-8">
+      <DeveloperTools />
+      
       {/* Provider Settings */}
       {isDev && <ProviderSettingsSection />}
 

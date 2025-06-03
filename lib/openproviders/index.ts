@@ -1,10 +1,11 @@
-import { anthropic } from "@ai-sdk/anthropic"
-import { google } from "@ai-sdk/google"
-import { mistral } from "@ai-sdk/mistral"
+import { anthropic, createAnthropic } from "@ai-sdk/anthropic"
+import { google, createGoogleGenerativeAI } from "@ai-sdk/google"
+import { mistral, createMistral } from "@ai-sdk/mistral"
 import { openai, createOpenAI } from "@ai-sdk/openai"
 import type { LanguageModelV1 } from "@ai-sdk/provider"
-import { xai } from "@ai-sdk/xai"
+import { xai, createXai } from "@ai-sdk/xai"
 import { getProviderForModel } from "./provider-map"
+import { getApiKeyForProvider } from "@/lib/user-keys"
 import type {
   AnthropicModel,
   GeminiModel,
@@ -58,7 +59,70 @@ const createOllamaProvider = () => {
   })
 }
 
-export function openproviders<T extends SupportedModel>(
+export async function openproviders<T extends SupportedModel>(
+  modelId: T,
+  settings?: OpenProvidersOptions<T>,
+  userId?: string
+): Promise<LanguageModelV1> {
+  const provider = getProviderForModel(modelId)
+
+  const apiKey = await getApiKeyForProvider(userId, provider)
+
+  if (provider === "openai") {
+    if (apiKey && userId) {
+      const customProvider = createOpenAI({ apiKey })
+      return customProvider(modelId as OpenAIModel, settings as OpenAIChatSettings)
+    }
+    return openai(modelId as OpenAIModel, settings as OpenAIChatSettings)
+  }
+
+  if (provider === "mistral") {
+    if (apiKey && userId) {
+      const customProvider = createMistral({ apiKey })
+      return customProvider(modelId as MistralModel, settings as MistralProviderSettings)
+    }
+    return mistral(modelId as MistralModel, settings as MistralProviderSettings)
+  }
+
+  if (provider === "google") {
+    if (apiKey && userId) {
+      const customProvider = createGoogleGenerativeAI({ apiKey })
+      return customProvider(modelId as GeminiModel, settings as GoogleGenerativeAIProviderSettings)
+    }
+    return google(
+      modelId as GeminiModel,
+      settings as GoogleGenerativeAIProviderSettings
+    )
+  }
+
+  if (provider === "anthropic") {
+    if (apiKey && userId) {
+      const customProvider = createAnthropic({ apiKey })
+      return customProvider(modelId as AnthropicModel, settings as AnthropicProviderSettings)
+    }
+    return anthropic(
+      modelId as AnthropicModel,
+      settings as AnthropicProviderSettings
+    )
+  }
+
+  if (provider === "xai") {
+    if (apiKey && userId) {
+      const customProvider = createXai({ apiKey })
+      return customProvider(modelId as XaiModel, settings as XaiProviderSettings)
+    }
+    return xai(modelId as XaiModel, settings as XaiProviderSettings)
+  }
+
+  if (provider === "ollama") {
+    const ollamaProvider = createOllamaProvider()
+    return ollamaProvider(modelId as OllamaModel, settings as OllamaProviderSettings)
+  }
+
+  throw new Error(`Unsupported model: ${modelId}`)
+}
+
+export function openprovidersSync<T extends SupportedModel>(
   modelId: T,
   settings?: OpenProvidersOptions<T>
 ): LanguageModelV1 {
@@ -91,7 +155,6 @@ export function openproviders<T extends SupportedModel>(
   }
 
   if (provider === "ollama") {
-    // Create a fresh Ollama provider instance for each call
     const ollamaProvider = createOllamaProvider()
     return ollamaProvider(modelId as OllamaModel, settings as OllamaProviderSettings)
   }
