@@ -1,9 +1,10 @@
-import { createClient } from "@/lib/supabase/server"
-import { decryptFromStorage } from "./encryption"
 import { env } from "./openproviders/env"
 
 export async function getUserApiKey(userId: string, provider: string): Promise<string | null> {
   try {
+    const { createClient } = await import("@/lib/supabase/server")
+    const { decryptFromStorage } = await import("./encryption")
+    
     const supabase = await createClient()
     if (!supabase) return null
     

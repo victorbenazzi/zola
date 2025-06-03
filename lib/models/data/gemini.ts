@@ -24,7 +24,7 @@ const geminiModels: ModelConfig[] = [
     website: "https://gemini.google.com",
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
-    apiSdk: () => openproviders("gemini-1.5-flash-002"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-1.5-flash-002", undefined, userId),
   },
   {
     id: "gemini-1.5-flash-8b",
@@ -48,7 +48,7 @@ const geminiModels: ModelConfig[] = [
     website: "https://gemini.google.com",
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
-    apiSdk: () => openproviders("gemini-1.5-flash-8b"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-1.5-flash-8b", undefined, userId),
   },
   {
     id: "gemini-1.5-pro-002",
@@ -73,7 +73,7 @@ const geminiModels: ModelConfig[] = [
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
     releasedAt: "2024-02-15",
-    apiSdk: () => openproviders("gemini-1.5-pro-002"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-1.5-pro-002", undefined, userId),
   },
   {
     id: "gemini-2.0-flash-001",
@@ -98,7 +98,7 @@ const geminiModels: ModelConfig[] = [
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
     releasedAt: "2024-12-11",
-    apiSdk: () => openproviders("gemini-2.0-flash-001"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-2.0-flash-001", undefined, userId),
   },
   {
     id: "gemini-2.0-flash-lite-preview-02-05",
@@ -122,7 +122,7 @@ const geminiModels: ModelConfig[] = [
     website: "https://gemini.google.com",
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
-    apiSdk: () => openproviders("gemini-2.0-flash-lite-preview-02-05"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-2.0-flash-lite-preview-02-05", undefined, userId),
   },
   {
     id: "gemini-2.5-pro-exp-03-25",
@@ -147,7 +147,7 @@ const geminiModels: ModelConfig[] = [
     website: "https://gemini.google.com",
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
-    apiSdk: () => openproviders("gemini-2.5-pro-exp-03-25"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-2.5-pro-exp-03-25", undefined, userId),
   },
   {
     id: "gemini-2.5-pro-exp-03-25-pro",
@@ -172,7 +172,7 @@ const geminiModels: ModelConfig[] = [
     website: "https://gemini.google.com",
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://deepmind.google/technologies/gemini",
-    apiSdk: () => openproviders("gemini-2.5-pro-exp-03-25"),
+    apiSdk: async (userId?: string) => await openproviders("gemini-2.5-pro-exp-03-25", undefined, userId),
   },
   {
     id: "gemma-3-27b-it",
@@ -198,7 +198,7 @@ const geminiModels: ModelConfig[] = [
     apiDocs: "https://ai.google.dev/api/docs",
     modelPage: "https://ai.google.dev/gemma",
     releasedAt: "2024-12-01",
-    apiSdk: () => openproviders("gemma-3-27b-it"),
+    apiSdk: async (userId?: string) => await openproviders("gemma-3-27b-it", undefined, userId),
   },
 ]
 

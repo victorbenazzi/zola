@@ -25,7 +25,7 @@ const mistralModels: ModelConfig[] = [
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/mistral-codestral/",
     releasedAt: "2024-05-21",
-    apiSdk: () => openproviders("open-mistral-7b"),
+    apiSdk: async (userId?: string) => await openproviders("open-mistral-7b", undefined, userId),
   },
   {
     id: "ministral-3b-latest",
@@ -49,7 +49,7 @@ const mistralModels: ModelConfig[] = [
     website: "https://mistral.ai",
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/ministral/",
-    apiSdk: () => openproviders("ministral-3b-latest"),
+    apiSdk: async (userId?: string) => await openproviders("ministral-3b-latest", undefined, userId),
   },
   {
     id: "ministral-8b-latest",
@@ -73,7 +73,7 @@ const mistralModels: ModelConfig[] = [
     website: "https://mistral.ai",
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/ministral/",
-    apiSdk: () => openproviders("ministral-8b-latest"),
+    apiSdk: async (userId?: string) => await openproviders("ministral-8b-latest", undefined, userId),
   },
   {
     id: "mistral-large-latest",
@@ -98,7 +98,7 @@ const mistralModels: ModelConfig[] = [
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/mistral-large/",
     releasedAt: "2024-02-26",
-    apiSdk: () => openproviders("mistral-large-latest"),
+    apiSdk: async (userId?: string) => await openproviders("mistral-large-latest", undefined, userId),
   },
   {
     id: "mistral-small-latest",
@@ -121,7 +121,7 @@ const mistralModels: ModelConfig[] = [
     intelligence: "Medium",
     website: "https://mistral.ai",
     apiDocs: "https://docs.mistral.ai/models",
-    apiSdk: () => openproviders("mistral-small-latest"),
+    apiSdk: async (userId?: string) => await openproviders("mistral-small-latest", undefined, userId),
   },
   {
     id: "mistral-small-2503",
@@ -145,7 +145,7 @@ const mistralModels: ModelConfig[] = [
     website: "https://mistral.ai",
     apiDocs: "https://docs.mistral.ai/models",
     releasedAt: "2025-03-01",
-    apiSdk: () => openproviders("mistral-small-latest"),
+    apiSdk: async (userId?: string) => await openproviders("mistral-small-latest", undefined, userId),
   },
   {
     id: "pixtral-12b-2409",
@@ -170,7 +170,7 @@ const mistralModels: ModelConfig[] = [
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/pixtral-12b/",
     releasedAt: "2024-09-01",
-    apiSdk: () => openproviders("pixtral-12b-2409"),
+    apiSdk: async (userId?: string) => await openproviders("pixtral-12b-2409", undefined, userId),
   },
   {
     id: "pixtral-large-latest",
@@ -194,7 +194,7 @@ const mistralModels: ModelConfig[] = [
     website: "https://mistral.ai",
     apiDocs: "https://docs.mistral.ai/models",
     modelPage: "https://mistral.ai/news/pixtral-large/",
-    apiSdk: () => openproviders("pixtral-large-latest"),
+    apiSdk: async (userId?: string) => await openproviders("pixtral-large-latest", undefined, userId),
   },
 ]
 

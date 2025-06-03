@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { encryptAndStore } from "@/lib/encryption"
 import { validateCsrfToken } from "@/lib/csrf"
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient()
     if (!supabase) {
