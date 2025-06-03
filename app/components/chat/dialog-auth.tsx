@@ -12,7 +12,7 @@ import {
 import { signInWithGoogle } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
 import { isSupabaseEnabled } from "@/lib/supabase/config"
-import Image from "next/image"
+
 import { useState } from "react"
 
 type DialogAuthProps = {
@@ -39,7 +39,7 @@ export function DialogAuth({ open, setOpen }: DialogAuthProps) {
       setIsLoading(true)
       setError(null)
 
-      const data = await signInWithGoogle(supabase)
+      const data = await signInWithGoogle(supabase as any)
 
       // Redirect to the provider URL
       if (data?.url) {

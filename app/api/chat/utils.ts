@@ -16,7 +16,7 @@ export function cleanMessagesForTools(
 
   // If no tools available, clean all tool-related content
   const cleanedMessages = messages
-    .map((message, index) => {
+    .map((message) => {
       // Skip tool messages entirely when no tools are available
       // Note: Using type assertion since AI SDK types might not include 'tool' role
       if ((message as any).role === "tool") {

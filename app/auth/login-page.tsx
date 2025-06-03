@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { signInWithGoogle } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
-import Image from "next/image"
+
 import Link from "next/link"
 import { useState } from "react"
 import { HeaderGoBack } from "../components/header-go-back"
@@ -23,7 +23,7 @@ export default function LoginPage() {
       setIsLoading(true)
       setError(null)
 
-      const data = await signInWithGoogle(supabase)
+      const data = await signInWithGoogle(supabase as any)
 
       // Redirect to the provider URL
       if (data?.url) {
