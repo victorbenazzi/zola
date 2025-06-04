@@ -1,4 +1,4 @@
-import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import { openproviders } from "@/lib/openproviders"
 import { ModelConfig } from "../types"
 
 const deepseekModels: ModelConfig[] = [
@@ -27,10 +27,7 @@ const deepseekModels: ModelConfig[] = [
     apiDocs: "https://platform.deepseek.com/api-docs",
     modelPage: "https://deepseek.com",
     releasedAt: "2024-04-01",
-    apiSdk: () =>
-      createOpenRouter({
-        apiKey: process.env.OPENROUTER_API_KEY,
-      }).chat("deepseek/deepseek-r1:free"),
+    apiSdk: async (userId?: string) => await openproviders("deepseek/deepseek-r1:free", undefined, userId),
   },
   {
     id: "deepseek-v3",
@@ -55,10 +52,7 @@ const deepseekModels: ModelConfig[] = [
     apiDocs: "https://github.com/deepseek-ai/deepseek",
     modelPage: "https://github.com/deepseek-ai",
     releasedAt: "2024-12-26",
-    apiSdk: () =>
-      createOpenRouter({
-        apiKey: process.env.OPENROUTER_API_KEY,
-      }).chat("deepseek-v3"),
+    apiSdk: async (userId?: string) => await openproviders("deepseek-v3", undefined, userId),
   },
 ]
 

@@ -98,7 +98,7 @@ export async function POST(req: Request) {
     let streamError: Error | null = null
 
     const result = streamText({
-      model: modelConfig.apiSdk(),
+      model: await modelConfig.apiSdk(userId),
       system: effectiveSystemPrompt,
       messages: cleanedMessages,
       tools: toolsToUse as ToolSet,

@@ -52,7 +52,7 @@ export async function validateFile(
 }
 
 export async function uploadFile(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<any>,
   file: File
 ): Promise<string> {
   const fileExt = file.name.split(".").pop()
@@ -104,7 +104,7 @@ export async function processFiles(
 
     try {
       const url = supabase
-        ? await uploadFile(supabase, file)
+        ? await uploadFile(supabase as any, file)
         : URL.createObjectURL(file)
 
       if (supabase) {

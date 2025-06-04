@@ -29,8 +29,8 @@ type ModelConfig = {
   modelPage?: string // official product page (e.g. https://x.ai/news/grok-2)
   releasedAt?: string // "2024-12-01" (optional, for tracking changes)
 
-  // apiSdk?: () => LanguageModelV1 // "openai("gpt-4.1-nano")"
-  apiSdk?: () => LanguageModelV1
+  // apiSdk?: (userId?: string) => Promise<LanguageModelV1> // "await openproviders("gpt-4.1-nano", undefined, userId)"
+  apiSdk?: (userId?: string) => Promise<LanguageModelV1>
 }
 
 export type { ModelConfig }

@@ -1,3 +1,4 @@
+import { openproviders } from "@/lib/openproviders"
 import { ModelConfig } from "../types"
 
 const llamaModels: ModelConfig[] = [
@@ -24,6 +25,7 @@ const llamaModels: ModelConfig[] = [
     website: "https://llama.meta.com",
     apiDocs: "https://docs.groq.com",
     modelPage: "https://ai.meta.com/llama/",
+    apiSdk: async (userId?: string) => await openproviders("llama-4-scout-groq", undefined, userId),
   },
   {
     id: "llama-3-3-70b-groq",
@@ -49,6 +51,7 @@ const llamaModels: ModelConfig[] = [
     apiDocs: "https://docs.groq.com",
     modelPage: "https://ai.meta.com/llama/",
     releasedAt: "2024-12-06",
+    apiSdk: async (userId?: string) => await openproviders("llama-3-3-70b-groq", undefined, userId),
   },
   {
     id: "llama-3-1-8b-groq",
@@ -74,6 +77,7 @@ const llamaModels: ModelConfig[] = [
     apiDocs: "https://docs.groq.com",
     modelPage: "https://ai.meta.com/llama/",
     releasedAt: "2024-07-23",
+    apiSdk: async (userId?: string) => await openproviders("llama-3-1-8b-groq", undefined, userId),
   },
   {
     id: "llama-3-70b-groq",
@@ -99,6 +103,7 @@ const llamaModels: ModelConfig[] = [
     apiDocs: "https://docs.groq.com",
     modelPage: "https://ai.meta.com/llama/",
     releasedAt: "2024-04-18",
+    apiSdk: async (userId?: string) => await openproviders("llama-3-70b-groq", undefined, userId),
   },
   {
     id: "llama-3-1-405b-together",
@@ -124,6 +129,7 @@ const llamaModels: ModelConfig[] = [
     apiDocs: "https://docs.together.ai",
     modelPage: "https://ai.meta.com/llama/",
     releasedAt: "2024-07-23",
+    apiSdk: async (userId?: string) => await openproviders("llama-3-1-405b-together", undefined, userId),
   },
 ]
 
