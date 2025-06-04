@@ -28,7 +28,7 @@ export function PopoverContentAuth() {
       setIsLoading(true)
       setError(null)
 
-      const data = await signInWithGoogle(supabase as any)
+      const data = await signInWithGoogle(supabase)
 
       // Redirect to the provider URL
       if (data?.url) {

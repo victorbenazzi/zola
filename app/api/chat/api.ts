@@ -22,7 +22,7 @@ export async function validateAndTrackUsage({
   const usageSupabase = await createClient()
   if (!usageSupabase) return null
 
-  await checkUsageByModel(usageSupabase as any, userId, model, isAuthenticated)
+  await checkUsageByModel(usageSupabase, userId, model, isAuthenticated)
   return supabase as unknown as SupabaseClientType
 }
 
@@ -51,7 +51,7 @@ export async function logUserMessage({
     const { createClient } = await import("@/lib/supabase/server")
     const usageSupabase = await createClient()
     if (usageSupabase) {
-      await incrementUsageByModel(usageSupabase as any, userId, model, isAuthenticated)
+      await incrementUsageByModel(usageSupabase, userId, model, isAuthenticated)
     }
   }
 }
