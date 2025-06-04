@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, EyeOff, Save, Trash2 } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 interface ApiKeysProps {
   userId: string
@@ -29,21 +29,21 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
   const [saving, setSaving] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
 
-  const fetchSavedProviders = async () => {
-    try {
-      const response = await fetch(`/api/user-keys?userId=${userId}&isAuthenticated=${isAuthenticated}`)
-      if (response.ok) {
-        const data = await response.json()
-        setSavedProviders(data.providers || [])
-      }
-    } catch (err) {
-      console.error("Error fetching saved providers:", err)
-    }
-  }
-
   useEffect(() => {
+    const fetchSavedProviders = async () => {
+      try {
+        const response = await fetch(`/api/user-keys?userId=${userId}&isAuthenticated=${isAuthenticated}`)
+        if (response.ok) {
+          const data = await response.json()
+          setSavedProviders(data.providers || [])
+        }
+      } catch (err) {
+        console.error("Error fetching saved providers:", err)
+      }
+    }
+    
     fetchSavedProviders()
-  }, [])
+  }, [userId, isAuthenticated])
 
   const handleSaveKey = async (provider: string) => {
     const apiKey = keys[provider]
@@ -81,13 +81,13 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
       } else {
         throw new Error("Failed to save key")
       }
-    } catch (err) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save API key",
         variant: "destructive"
       })
-    }finally {
+    } finally {
       setSaving(prev => ({ ...prev, [provider]: false }))
     }
   }
@@ -110,13 +110,13 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
       } else {
         throw new Error("Failed to delete key")
       }
-    } catch (err) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete API key",
         variant: "destructive"
       })
-    }finally {
+    } finally {
       setSaving(prev => ({ ...prev, [provider]: false }))
     }
   }
