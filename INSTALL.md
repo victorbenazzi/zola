@@ -55,6 +55,50 @@ OLLAMA_BASE_URL=http://localhost:11434
 
 A `.env.example` file is included in the repository for reference. Copy this file to `.env.local` and update the values with your credentials.
 
+### BYOK (Bring Your Own Key) Setup
+
+Zola supports user-specific API keys that take priority over environment variables. This allows authenticated users to use their own API keys for AI providers.
+
+#### Database Setup
+
+Create the user_keys table in your Supabase database:
+
+```sql
+CREATE TABLE user_keys (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  encrypted_key TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, provider)
+);
+
+-- Enable RLS
+ALTER TABLE user_keys ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only access their own keys
+CREATE POLICY "Users can manage their own API keys" ON user_keys
+  FOR ALL USING (auth.uid() = user_id);
+```
+
+#### Environment Variables
+
+Add the encryption key to your `.env.local`:
+
+```bash
+# BYOK Encryption (generate with: openssl rand -hex 32)
+ENCRYPTION_KEY=your_64_character_hex_encryption_key
+```
+
+#### How it works
+
+- User keys are encrypted using AES-256-GCM before storage
+- When a user has a personal API key, it takes priority over environment variables
+- Fallback to environment variables when no user key is available
+- Keys are only decrypted server-side and never sent to the frontend
+
 ### Generating a CSRF Secret
 
 The `CSRF_SECRET` is used to protect your application against Cross-Site Request Forgery attacks. You need to generate a secure random string for this value. Here are a few ways to generate one:

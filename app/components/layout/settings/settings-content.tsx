@@ -14,6 +14,7 @@ import { ConnectionsPlaceholder } from "./connections/connections-placeholder"
 // Connections tab components
 import { DeveloperTools } from "./connections/developer-tools"
 import { ProviderSettings } from "./connections/provider-settings"
+import { ApiKeysWrapper } from "./connections/api-keys-wrapper"
 import { AccountManagement } from "./general/account-management"
 import { ModelPreferences } from "./general/model-preferences"
 // General tab components
@@ -101,6 +102,7 @@ export function SettingsContent({
               {!isDev && <ConnectionsPlaceholder />}
               {isDev && <ProviderSettings />}
               {isDev && <DeveloperTools />}
+              {isSupabaseEnabled && <ApiKeysWrapper />}
             </TabsContent>
           </div>
         ) : (
@@ -162,6 +164,7 @@ export function SettingsContent({
                 {!isDev && <ConnectionsPlaceholder />}
                 {isDev && <ProviderSettings />}
                 {isDev && <DeveloperTools />}
+                {isSupabaseEnabled && <ApiKeysWrapper />}
               </TabsContent>
             </div>
           </>

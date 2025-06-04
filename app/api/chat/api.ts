@@ -18,8 +18,12 @@ export async function validateAndTrackUsage({
   const supabase = await validateUserIdentity(userId, isAuthenticated)
   if (!supabase) return null
 
-  await checkUsageByModel(supabase, userId, model, isAuthenticated)
-  return supabase
+  const { createClient } = await import("@/lib/supabase/server")
+  const usageSupabase = await createClient()
+  if (!usageSupabase) return null
+
+  await checkUsageByModel(usageSupabase as any, userId, model, isAuthenticated)
+  return supabase as unknown as SupabaseClientType
 }
 
 export async function logUserMessage({
@@ -44,7 +48,11 @@ export async function logUserMessage({
   if (error) {
     console.error("Error saving user message:", error)
   } else {
-    await incrementUsageByModel(supabase, userId, model, isAuthenticated)
+    const { createClient } = await import("@/lib/supabase/server")
+    const usageSupabase = await createClient()
+    if (usageSupabase) {
+      await incrementUsageByModel(usageSupabase as any, userId, model, isAuthenticated)
+    }
   }
 }
 

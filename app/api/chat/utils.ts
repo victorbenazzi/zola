@@ -19,7 +19,7 @@ export function cleanMessagesForTools(
     .map((message) => {
       // Skip tool messages entirely when no tools are available
       // Note: Using type assertion since AI SDK types might not include 'tool' role
-      if ((message as any).role === "tool") {
+      if (message.role === "tool") {
         return null
       }
 
@@ -29,15 +29,15 @@ export function cleanMessagesForTools(
 
         // Remove tool invocations if present
         if (message.toolInvocations && message.toolInvocations.length > 0) {
-          const { toolInvocations, ...messageWithoutToolInvocations } =
+          const { toolInvocations: _, ...messageWithoutToolInvocations } =
             cleanedMessage
           Object.assign(cleanedMessage, messageWithoutToolInvocations)
         }
 
         // Clean content if it's an array (remove tool-call parts)
         if (Array.isArray(message.content)) {
-          const filteredContent = (message.content as any[]).filter(
-            (part: any) => {
+          const filteredContent = (message.content as Array<{ type?: string; text?: string }>).filter(
+            (part) => {
               if (part && typeof part === "object" && part.type) {
                 // Remove tool-call, tool-result, and tool-invocation parts
                 const isToolPart =
@@ -52,14 +52,14 @@ export function cleanMessagesForTools(
 
           // Extract text content
           const textParts = filteredContent.filter(
-            (part: any) =>
+            (part) =>
               part && typeof part === "object" && part.type === "text"
           )
 
           if (textParts.length > 0) {
             // Combine text parts into a single string
             const textContent = textParts
-              .map((part: any) => part.text || "")
+              .map((part) => part.text || "")
               .join("\n")
               .trim()
             cleanedMessage.content = textContent || "[Assistant response]"
@@ -86,8 +86,8 @@ export function cleanMessagesForTools(
 
       // For user messages, clean any tool-related content from array content
       if (message.role === "user" && Array.isArray(message.content)) {
-        const filteredContent = (message.content as any[]).filter(
-          (part: any) => {
+        const filteredContent = (message.content as Array<{ type?: string }>).filter(
+          (part) => {
             if (part && typeof part === "object" && part.type) {
               const isToolPart =
                 part.type === "tool-call" ||
@@ -99,7 +99,7 @@ export function cleanMessagesForTools(
           }
         )
 
-        if (filteredContent.length !== (message.content as any[]).length) {
+        if (filteredContent.length !== (message.content as Array<unknown>).length) {
           return {
             ...message,
             content:
@@ -121,10 +121,10 @@ export function cleanMessagesForTools(
 export function messageHasToolContent(message: MessageAISDK): boolean {
   return !!(
     message.toolInvocations?.length ||
-    (message as any).role === "tool" ||
+    message.role === "tool" ||
     (Array.isArray(message.content) &&
-      (message.content as any[]).some(
-        (part: any) =>
+      (message.content as Array<{ type?: string }>).some(
+        (part) =>
           part &&
           typeof part === "object" &&
           part.type &&

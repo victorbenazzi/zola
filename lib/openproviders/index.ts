@@ -66,7 +66,14 @@ export async function openproviders<T extends SupportedModel>(
 ): Promise<LanguageModelV1> {
   const provider = getProviderForModel(modelId)
 
-  const apiKey = await getApiKeyForProvider(userId, provider)
+  let apiKey = null
+  if (userId && typeof window === 'undefined') {
+    try {
+      apiKey = await getApiKeyForProvider(userId, provider)
+    } catch (error) {
+      console.warn("Could not load user keys:", error)
+    }
+  }
 
   if (provider === "openai") {
     if (apiKey && userId) {
