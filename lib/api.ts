@@ -106,7 +106,7 @@ export async function updateChatModel(chatId: string, model: string) {
 /**
  * Signs in user with Google OAuth via Supabase
  */
-export async function signInWithGoogle(supabase: SupabaseClient<any>) {
+export async function signInWithGoogle(supabase: SupabaseClient) {
   try {
     const isDev = process.env.NODE_ENV === "development"
 
@@ -216,7 +216,7 @@ export class SpecialAgentLimitError extends Error {
 }
 
 export async function checkSpecialAgentUsage(
-  supabase: SupabaseClient<any>,
+  supabase: SupabaseClient,
   userId: string
 ) {
   const { data: user, error } = await supabase
@@ -272,7 +272,7 @@ export async function checkSpecialAgentUsage(
 }
 
 export async function incrementSpecialAgentUsage(
-  supabase: SupabaseClient<any>,
+  supabase: SupabaseClient,
   userId: string,
   currentCount?: number
 ): Promise<void> {

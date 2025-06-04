@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, EyeOff, Save, Trash2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 
 interface ApiKeysProps {
   userId: string
@@ -25,13 +25,9 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
   const [keys, setKeys] = useState<Record<string, string>>({})
   const [savedProviders, setSavedProviders] = useState<string[]>([])
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
-  const [loading, setLoading] = useState(false)
+
   const [saving, setSaving] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
-
-  useEffect(() => {
-    fetchSavedProviders()
-  }, [])
 
   const fetchSavedProviders = async () => {
     try {
@@ -40,10 +36,14 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
         const data = await response.json()
         setSavedProviders(data.providers || [])
       }
-    } catch (error) {
-      console.error("Error fetching saved providers:", error)
+    } catch (err) {
+      console.error("Error fetching saved providers:", err)
     }
   }
+
+  useEffect(() => {
+    fetchSavedProviders()
+  }, [])
 
   const handleSaveKey = async (provider: string) => {
     const apiKey = keys[provider]
@@ -81,13 +81,13 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
       } else {
         throw new Error("Failed to save key")
       }
-    } catch (error) {
+    } catch (err) {
       toast({
         title: "Error",
         description: "Failed to save API key",
         variant: "destructive"
       })
-    } finally {
+    }finally {
       setSaving(prev => ({ ...prev, [provider]: false }))
     }
   }
@@ -110,13 +110,13 @@ export function ApiKeys({ userId, isAuthenticated }: ApiKeysProps) {
       } else {
         throw new Error("Failed to delete key")
       }
-    } catch (error) {
+    } catch (err) {
       toast({
         title: "Error",
         description: "Failed to delete API key",
         variant: "destructive"
       })
-    } finally {
+    }finally {
       setSaving(prev => ({ ...prev, [provider]: false }))
     }
   }
