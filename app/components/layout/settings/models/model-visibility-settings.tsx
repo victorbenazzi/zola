@@ -14,8 +14,6 @@ export function ModelVisibilitySettings() {
     Record<string, boolean>
   >({})
 
-  console.log("models", models)
-
   const filteredModels = models.filter((model) =>
     model.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -39,8 +37,6 @@ export function ModelVisibilitySettings() {
     },
     {} as Record<string, typeof models>
   )
-
-  console.log("modelsByProvider", modelsByProvider)
 
   const handleToggle = (modelId: string) => {
     // Optimistic update
