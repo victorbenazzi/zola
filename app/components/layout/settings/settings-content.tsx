@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { isSupabaseEnabled } from "@/lib/supabase/config"
 import { cn, isDev } from "@/lib/utils"
 import {
+  CubeIcon,
   GearSixIcon,
   KeyIcon,
   PaintBrushIcon,
   PlugsConnectedIcon,
-  RobotIcon,
   XIcon,
 } from "@phosphor-icons/react"
 import { useState } from "react"
@@ -92,7 +92,7 @@ export function SettingsContent({
                   value="models"
                   className="flex shrink-0 items-center gap-2"
                 >
-                  <RobotIcon className="size-4" />
+                  <CubeIcon className="size-4" />
                   <span>Models</span>
                 </TabsTrigger>
                 <TabsTrigger
@@ -175,7 +175,7 @@ export function SettingsContent({
                   className="w-full justify-start rounded-md px-3 py-2 text-left"
                 >
                   <div className="flex items-center gap-2">
-                    <RobotIcon className="size-4" />
+                    <CubeIcon className="size-4" />
                     <span>Models</span>
                   </div>
                 </TabsTrigger>
