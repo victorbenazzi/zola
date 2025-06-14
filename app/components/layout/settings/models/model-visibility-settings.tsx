@@ -20,34 +20,24 @@ export function ModelVisibilitySettings() {
     model.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Group models by provider (not just icon)
+  // Group models by icon (model type) but remove duplicates and keep provider info
   const modelsByProvider = filteredModels.reduce(
     (acc, model) => {
-      const provider = PROVIDERS.find((p) => p.id === model.icon)
-      const providerKey = provider
-        ? `${provider.id}-${provider.name}`
-        : `unknown-${model.icon || "Unknown"}`
+      const iconKey = model.icon || "unknown"
 
-      if (!acc[providerKey]) {
-        acc[providerKey] = {
-          provider: provider || {
-            id: model.icon || "unknown",
-            name: model.icon || "Unknown",
-            icon: null,
-          },
-          models: [],
-        }
+      if (!acc[iconKey]) {
+        acc[iconKey] = []
       }
-      acc[providerKey].models.push(model)
+
+      // Check if we already have this model name in this group
+      const existingModel = acc[iconKey].find((m) => m.name === model.name)
+      if (!existingModel) {
+        acc[iconKey].push(model)
+      }
+
       return acc
     },
-    {} as Record<
-      string,
-      {
-        provider: { id: string; name: string; icon: any }
-        models: typeof models
-      }
-    >
+    {} as Record<string, typeof models>
   )
 
   console.log("modelsByProvider", modelsByProvider)
@@ -92,28 +82,40 @@ export function ModelVisibilitySettings() {
         />
       </div>
 
-      {/* Models grouped by provider */}
+      {/* Models grouped by icon/type */}
       <div className="space-y-6 pb-6">
-        {Object.entries(modelsByProvider).map(
-          ([providerKey, { provider, models: providerModels }]) => {
-            return (
-              <div key={providerKey} className="space-y-3">
-                <div className="flex items-center gap-2">
-                  {provider.icon && <provider.icon className="size-5" />}
-                  <h4 className="font-medium">{provider.name}</h4>
-                  <span className="text-muted-foreground text-sm">
-                    ({providerModels.length} models)
-                  </span>
-                </div>
+        {Object.entries(modelsByProvider).map(([iconKey, modelsGroup]) => {
+          const firstModel = modelsGroup[0]
+          const provider = PROVIDERS.find((p) => p.id === firstModel.icon)
 
-                <div className="space-y-2 pl-7">
-                  {providerModels.map((model) => (
+          return (
+            <div key={iconKey} className="space-y-3">
+              <div className="flex items-center gap-2">
+                {provider?.icon && <provider.icon className="size-5" />}
+                <h4 className="font-medium">{provider?.name || iconKey}</h4>
+                <span className="text-muted-foreground text-sm">
+                  ({modelsGroup.length} models)
+                </span>
+              </div>
+
+              <div className="space-y-2 pl-7">
+                {modelsGroup.map((model) => {
+                  const modelProvider = PROVIDERS.find(
+                    (p) => p.id === model.provider
+                  )
+
+                  return (
                     <div
                       key={model.id}
                       className="flex items-center justify-between py-1"
                     >
                       <div className="flex flex-col">
-                        <span className="text-sm">{model.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm">{model.name}</span>
+                          <span className="text-muted-foreground bg-muted rounded px-1.5 py-0.5 text-xs">
+                            via {modelProvider?.name || model.provider}
+                          </span>
+                        </div>
                         {model.description && (
                           <span className="text-muted-foreground text-xs">
                             {model.description}
@@ -125,12 +127,12 @@ export function ModelVisibilitySettings() {
                         onCheckedChange={() => handleToggle(model.id)}
                       />
                     </div>
-                  ))}
-                </div>
+                  )
+                })}
               </div>
-            )
-          }
-        )}
+            </div>
+          )
+        })}
       </div>
 
       {filteredModels.length === 0 && (
