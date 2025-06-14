@@ -18,7 +18,7 @@ export function ModelVisibilitySettings() {
     model.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Group models by icon (model type) but remove duplicates and keep provider info
+  // Group models by icon (real provider type) and keep all models including duplicates from different providers
   const modelsByProvider = filteredModels.reduce(
     (acc, model) => {
       const iconKey = model.icon || "unknown"
@@ -27,11 +27,7 @@ export function ModelVisibilitySettings() {
         acc[iconKey] = []
       }
 
-      // Check if we already have this model name in this group
-      const existingModel = acc[iconKey].find((m) => m.name === model.name)
-      if (!existingModel) {
-        acc[iconKey].push(model)
-      }
+      acc[iconKey].push(model)
 
       return acc
     },
