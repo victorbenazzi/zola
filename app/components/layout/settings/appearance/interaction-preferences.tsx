@@ -13,7 +13,7 @@ export function InteractionPreferences() {
   } = useUserPreferences()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       {/* Prompt Suggestions */}
       <div>
         <div className="flex items-center justify-between">
