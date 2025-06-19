@@ -9,6 +9,7 @@ import { useUser } from "@/lib/user-store/provider"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { mockMessageGroups } from "./mock-data"
 import { MultiChatInput } from "./multi-chat-input"
 import { useMultiChat } from "./use-multi-chat"
 
@@ -20,6 +21,9 @@ export function MultiChat() {
   const { user } = useUser()
   const { models, isLoading: isLoadingModels } = useModel()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // mock data for UI development
+  const [mockMessages, setMockMessages] = useState(mockMessageGroups)
 
   // Filter models to get real available models and transform them for useMultiChat
   const availableModels = useMemo(() => {
@@ -81,6 +85,7 @@ export function MultiChat() {
               model: chat.model.name,
               message: assistantMsg,
               isLoading: false,
+              provider: chat.model.provider,
             })
           } else if (chat.isLoading && userMsg.content === prompt) {
             // Currently loading for this prompt
@@ -88,6 +93,7 @@ export function MultiChat() {
               model: chat.model.name,
               message: null,
               isLoading: true,
+              provider: chat.model.provider,
             })
           }
         }
@@ -190,9 +196,9 @@ export function MultiChat() {
   // Memoize the conversation props
   const conversationProps = useMemo(
     () => ({
-      messageGroups,
+      messageGroups: mockMessages as any, // Use mock data for testing
     }),
-    [messageGroups]
+    [mockMessages]
   )
 
   // Memoize the input props
@@ -226,7 +232,7 @@ export function MultiChat() {
     ]
   )
 
-  const showOnboarding = messageGroups.length === 0
+  const showOnboarding = mockMessages.length === 0
 
   // Show loading state while models are being fetched
   if (isLoadingModels) {

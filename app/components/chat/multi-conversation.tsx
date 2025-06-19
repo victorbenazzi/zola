@@ -6,6 +6,8 @@ import {
 } from "@/components/prompt-kit/chat-container"
 import { Loader } from "@/components/prompt-kit/loader"
 import { ScrollButton } from "@/components/prompt-kit/scroll-button"
+import { getModelInfo } from "@/lib/models"
+import { PROVIDERS } from "@/lib/providers"
 import { Message as MessageType } from "@ai-sdk/react"
 import { Message } from "./message"
 
@@ -15,6 +17,7 @@ type GroupedMessage = {
     model: string
     message: MessageType
     isLoading?: boolean
+    provider: string
   }[]
   onDelete: (model: string, id: string) => void
   onEdit: (model: string, id: string, newText: string) => void
@@ -69,53 +72,70 @@ export function MultiModelConversation({
                   </Message>
                 </div>
 
-                <div className="mx-auto flex w-full max-w-[1800px] space-x-4 overflow-x-auto px-6">
-                  {group.responses.map((res) => (
-                    <div
-                      key={res.model}
-                      className="bg-muted max-w-[420px] min-w-[360px] flex-shrink-0 rounded border p-3"
-                    >
-                      <div className="text-muted-foreground mb-2 text-xs font-medium">
-                        {res.model}
-                      </div>
+                <div className="mx-auto flex w-full max-w-[1800px] items-start space-x-4 overflow-x-auto px-6">
+                  {group.responses.map((res) => {
+                    console.log("res", res)
+                    const model = getModelInfo(res.model)
 
-                      {res.message ? (
-                        <Message
-                          id={res.message.id}
-                          variant="assistant"
-                          parts={
-                            res.message.parts || [
-                              { type: "text", text: res.message.content },
-                            ]
-                          }
-                          attachments={res.message.experimental_attachments}
-                          onDelete={() =>
-                            group.onDelete(res.model, res.message.id)
-                          }
-                          onEdit={(id, newText) =>
-                            group.onEdit(res.model, id, newText)
-                          }
-                          onReload={() => group.onReload(res.model)}
-                          status={res.isLoading ? "streaming" : "ready"}
-                          isLast={false}
-                          hasScrollAnchor={false}
-                        >
-                          {res.message.content}
-                        </Message>
-                      ) : res.isLoading ? (
-                        <div className="space-y-2">
-                          <div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            assistant
+                    const providerIcon = PROVIDERS.find(
+                      (p) => p.id === model?.providerId
+                    )
+
+                    return (
+                      <div
+                        key={res.model}
+                        className="max-w-[420px] min-w-[360px] flex-shrink-0 rounded border bg-transparent p-3"
+                      >
+                        <div className="text-muted-foreground mb-2 flex items-center gap-1">
+                          <span>
+                            {providerIcon?.icon && (
+                              <providerIcon.icon className="size-4" />
+                            )}
+                          </span>
+                          <span className="text-xs font-medium">
+                            {model?.name}
+                          </span>
+                        </div>
+
+                        {res.message ? (
+                          <Message
+                            id={res.message.id}
+                            variant="assistant"
+                            parts={
+                              res.message.parts || [
+                                { type: "text", text: res.message.content },
+                              ]
+                            }
+                            attachments={res.message.experimental_attachments}
+                            onDelete={() =>
+                              group.onDelete(res.model, res.message.id)
+                            }
+                            onEdit={(id, newText) =>
+                              group.onEdit(res.model, id, newText)
+                            }
+                            onReload={() => group.onReload(res.model)}
+                            status={res.isLoading ? "streaming" : "ready"}
+                            isLast={false}
+                            hasScrollAnchor={false}
+                            className="bg-transparent p-0 px-0"
+                          >
+                            {res.message.content}
+                          </Message>
+                        ) : res.isLoading ? (
+                          <div className="space-y-2">
+                            <div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                              assistant
+                            </div>
+                            <Loader />
                           </div>
-                          <Loader />
-                        </div>
-                      ) : (
-                        <div className="text-muted-foreground text-sm italic">
-                          Waiting for response...
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        ) : (
+                          <div className="text-muted-foreground text-sm italic">
+                            Waiting for response...
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             ))
