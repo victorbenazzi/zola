@@ -1,6 +1,7 @@
 "use client"
 
 import { MultiModelConversation } from "@/app/components/chat/multi-conversation"
+import { MultiModelSelector } from "@/components/common/multi-model-selector/base"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -217,6 +218,10 @@ export default function MultiChatPage() {
                     handleSubmit(e)
                   }
                 }}
+              />
+              <MultiModelSelector
+                selectedModelIds={Array.from(enabledModels)}
+                setSelectedModelIds={setEnabledModels}
               />
               <Button
                 type="submit"
