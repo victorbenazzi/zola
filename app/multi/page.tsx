@@ -1,7 +1,6 @@
 "use client"
 
 import { MultiModelConversation } from "@/app/components/chat/multi-conversation"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -10,9 +9,9 @@ import { toast } from "@/components/ui/toast"
 import { getOrCreateGuestUserId } from "@/lib/api"
 import { SYSTEM_PROMPT_DEFAULT } from "@/lib/config"
 import { useUser } from "@/lib/user-store/provider"
-import { Message as MessageType, useChat } from "@ai-sdk/react"
 import { ArrowUp, Spinner } from "@phosphor-icons/react"
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react"
+import { FormEvent, useCallback, useEffect, useState } from "react"
+import { useMultiChat } from "./use-multi-chat"
 
 // Popular models for multi-chat
 const DEFAULT_MODELS = [
@@ -26,14 +25,6 @@ const DEFAULT_MODELS = [
   },
 ]
 
-interface ModelChat {
-  model: { id: string; name: string; provider: string }
-  messages: MessageType[]
-  isLoading: boolean
-  append: (message: MessageType, options?: any) => void
-  stop: () => void
-}
-
 export default function MultiChatPage() {
   const [prompt, setPrompt] = useState("")
   const [enabledModels, setEnabledModels] = useState<Set<string>>(
@@ -43,98 +34,8 @@ export default function MultiChatPage() {
   const { user } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Create individual chat hooks for each model
-  const gptChat = useChat({
-    api: "/api/chat",
-    onError: (error) => {
-      console.error(`Error with GPT-4.1 Nano:`, error)
-      toast({
-        title: `Error with GPT-4.1 Nano`,
-        description: error.message,
-        status: "error",
-      })
-    },
-  })
-
-  const deepseekChat = useChat({
-    api: "/api/chat",
-    onError: (error) => {
-      console.error(`Error with DeepSeek R1:`, error)
-      toast({
-        title: `Error with DeepSeek R1`,
-        description: error.message,
-        status: "error",
-      })
-    },
-  })
-
-  const mistralChat = useChat({
-    api: "/api/chat",
-    onError: (error) => {
-      console.error(`Error with Mistral Large:`, error)
-      toast({
-        title: `Error with Mistral Large`,
-        description: error.message,
-        status: "error",
-      })
-    },
-  })
-
-  const claudeChat = useChat({
-    api: "/api/chat",
-    onError: (error) => {
-      console.error(`Error with Claude 3.5 Sonnet:`, error)
-      toast({
-        title: `Error with Claude 3.5 Sonnet`,
-        description: error.message,
-        status: "error",
-      })
-    },
-  })
-
-  // Memoize the model chats array
-  const modelChats: ModelChat[] = useMemo(
-    () => [
-      {
-        model: DEFAULT_MODELS[0],
-        messages: gptChat.messages,
-        isLoading: gptChat.isLoading,
-        append: gptChat.append,
-        stop: gptChat.stop,
-      },
-      {
-        model: DEFAULT_MODELS[1],
-        messages: deepseekChat.messages,
-        isLoading: deepseekChat.isLoading,
-        append: deepseekChat.append,
-        stop: deepseekChat.stop,
-      },
-      {
-        model: DEFAULT_MODELS[2],
-        messages: mistralChat.messages,
-        isLoading: mistralChat.isLoading,
-        append: mistralChat.append,
-        stop: mistralChat.stop,
-      },
-      {
-        model: DEFAULT_MODELS[3],
-        messages: claudeChat.messages,
-        isLoading: claudeChat.isLoading,
-        append: claudeChat.append,
-        stop: claudeChat.stop,
-      },
-    ],
-    [
-      gptChat.messages,
-      gptChat.isLoading,
-      deepseekChat.messages,
-      deepseekChat.isLoading,
-      mistralChat.messages,
-      mistralChat.isLoading,
-      claudeChat.messages,
-      claudeChat.isLoading,
-    ]
-  )
+  // Use the custom hook to manage all chat instances
+  const modelChats = useMultiChat(DEFAULT_MODELS)
 
   const updateMessageGroups = useCallback(() => {
     // Group messages by user message content (simple grouping strategy)
