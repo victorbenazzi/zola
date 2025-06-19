@@ -33,6 +33,7 @@ import { useUserPreferences } from "@/lib/user-preference-store/provider"
 import { cn } from "@/lib/utils"
 import {
   CaretDownIcon,
+  CheckIcon,
   MagnifyingGlassIcon,
   StarIcon,
   XIcon,
@@ -184,6 +185,14 @@ export function MultiModelSelector({
           <span className="text-muted-foreground">Select models</span>
         ) : selectedModels.length === 1 ? (
           <>
+            {(() => {
+              const provider = PROVIDERS.find(
+                (p) => p.id === selectedModels[0].icon
+              )
+              return provider?.icon ? (
+                <provider.icon className="size-5 flex-shrink-0" />
+              ) : null
+            })()}
             <span className="truncate">{selectedModels[0].name}</span>
           </>
         ) : (
@@ -395,17 +404,13 @@ export function MultiModelSelector({
                       }}
                     >
                       <div className="flex items-center gap-3">
-                        <Checkbox
-                          checked={isSelected}
-                          disabled={isLocked || (!isSelected && isAtLimit)}
-                          onClick={(e) => e.stopPropagation()}
-                        />
                         {provider?.icon && <provider.icon className="size-5" />}
                         <div className="flex flex-col gap-0">
                           <span className="text-sm">{model.name}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {isSelected && <CheckIcon className="size-4" />}
                         {isLocked && (
                           <div className="border-input bg-accent text-muted-foreground flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[10px] font-medium">
                             <span>Locked</span>

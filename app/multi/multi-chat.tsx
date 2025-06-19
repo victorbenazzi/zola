@@ -34,17 +34,6 @@ export function MultiChat() {
     }))
   }, [models])
 
-  // Initialize with first 2 accessible models when models are loaded
-  useEffect(() => {
-    if (availableModels.length > 0 && selectedModelIds.length === 0) {
-      const accessibleModels = models.filter((model) => model.accessible)
-      const defaultSelected = accessibleModels
-        .slice(0, 2)
-        .map((model) => model.id)
-      setSelectedModelIds(defaultSelected)
-    }
-  }, [availableModels, selectedModelIds.length, models])
-
   // Use the custom hook to manage all chat instances
   const modelChats = useMultiChat(availableModels)
 
@@ -246,7 +235,8 @@ export function MultiChat() {
   return (
     <div
       className={cn(
-        "@container/main relative flex h-full flex-col items-center justify-end md:justify-center"
+        "@container/main relative flex h-full flex-col items-center",
+        showOnboarding ? "justify-end md:justify-center" : "justify-end"
       )}
     >
       <AnimatePresence initial={false} mode="popLayout">
@@ -270,19 +260,33 @@ export function MultiChat() {
             </h1>
           </motion.div>
         ) : (
-          <MultiModelConversation key="conversation" {...conversationProps} />
+          <motion.div
+            key="conversation"
+            className="w-full flex-1 overflow-hidden"
+            layout="position"
+            layoutId="conversation"
+            transition={{
+              layout: {
+                duration: mockMessages.length === 1 ? 0.3 : 0,
+              },
+            }}
+          >
+            <MultiModelConversation {...conversationProps} />
+          </motion.div>
         )}
       </AnimatePresence>
 
+      {/* @todo: need to add title here below */}
       <motion.div
         className={cn(
-          "relative inset-x-0 bottom-0 z-50 mx-auto w-full max-w-3xl"
+          "z-50 mx-auto w-full max-w-3xl",
+          showOnboarding ? "relative" : "absolute right-0 bottom-0 left-0"
         )}
         layout="position"
         layoutId="multi-chat-input-container"
         transition={{
           layout: {
-            duration: messageGroups.length === 1 ? 0.3 : 0,
+            duration: mockMessages.length === 1 ? 0.3 : 0,
           },
         }}
       >
