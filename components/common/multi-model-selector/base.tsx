@@ -174,7 +174,7 @@ export function MultiModelSelector({
     <Button
       variant="outline"
       className={cn(
-        "dark:bg-secondary min-w-[200px] justify-between",
+        "dark:bg-secondary min-w-[200px] justify-between rounded-full",
         className
       )}
       disabled={isLoadingModels}
@@ -247,34 +247,9 @@ export function MultiModelSelector({
     )
   }
 
-  // Show selected models as removable chips above the trigger
-  const selectedModelsDisplay = selectedModels.length > 0 && (
-    <div className="mb-2 flex flex-wrap gap-1">
-      {selectedModels.map((model) => {
-        const provider = PROVIDERS.find((p) => p.id === model.icon)
-        return (
-          <div
-            key={model.id}
-            className="bg-accent text-accent-foreground flex items-center gap-1 rounded-md px-2 py-1 text-xs"
-          >
-            {provider?.icon && <provider.icon className="size-3" />}
-            <span className="max-w-[100px] truncate">{model.name}</span>
-            <button
-              onClick={(e) => removeModel(model.id, e)}
-              className="hover:bg-accent-foreground/20 rounded-full p-0.5"
-            >
-              <XIcon className="size-3" />
-            </button>
-          </div>
-        )
-      })}
-    </div>
-  )
-
   if (isMobile) {
     return (
       <div>
-        {selectedModelsDisplay}
         <ProModelDialog
           isOpen={isProDialogOpen}
           setIsOpen={setIsProDialogOpen}
@@ -334,7 +309,6 @@ export function MultiModelSelector({
 
   return (
     <div>
-      {selectedModelsDisplay}
       <ProModelDialog
         isOpen={isProDialogOpen}
         setIsOpen={setIsProDialogOpen}

@@ -1,6 +1,6 @@
 import { toast } from "@/components/ui/toast"
 import { useChat } from "@ai-sdk/react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 interface ModelConfig {
   id: string
@@ -16,35 +16,38 @@ interface ModelChat {
   stop: () => void
 }
 
+// Maximum number of models we support
+const MAX_MODELS = 10
+
 export function useMultiChat(models: ModelConfig[]): ModelChat[] {
-  // Create chat instances for each model
-  const chatInstances = models.map((model) => {
-    const chat = useChat({
+  // Create a fixed number of useChat hooks to avoid conditional hook calls
+  const chatHooks = Array.from({ length: MAX_MODELS }, (_, index) =>
+    useChat({
       api: "/api/chat",
       onError: (error) => {
-        console.error(`Error with ${model.name}:`, error)
-        toast({
-          title: `Error with ${model.name}`,
-          description: error.message,
-          status: "error",
-        })
+        const model = models[index]
+        if (model) {
+          console.error(`Error with ${model.name}:`, error)
+          toast({
+            title: `Error with ${model.name}`,
+            description: error.message,
+            status: "error",
+          })
+        }
       },
     })
+  )
 
-    return {
+  // Map the active models to their corresponding chat hooks
+  const activeChatInstances = useMemo(() => {
+    return models.slice(0, MAX_MODELS).map((model, index) => ({
       model,
-      chat,
-    }
-  })
-
-  // Memoize the result to prevent unnecessary re-renders
-  return useMemo(() => {
-    return chatInstances.map(({ model, chat }) => ({
-      model,
-      messages: chat.messages,
-      isLoading: chat.isLoading,
-      append: chat.append,
-      stop: chat.stop,
+      messages: chatHooks[index].messages,
+      isLoading: chatHooks[index].isLoading,
+      append: chatHooks[index].append,
+      stop: chatHooks[index].stop,
     }))
-  }, [...chatInstances.flatMap(({ chat }) => [chat.messages, chat.isLoading])])
+  }, [models, ...chatHooks.flatMap((chat) => [chat.messages, chat.isLoading])])
+
+  return activeChatInstances
 }
