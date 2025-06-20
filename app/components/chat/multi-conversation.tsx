@@ -74,16 +74,11 @@ export function MultiModelConversation({
 
                 <div className="mx-auto flex w-full max-w-[1800px] items-start space-x-4 overflow-x-auto px-6">
                   {group.responses.map((res) => {
-                    console.log("res", res)
                     const model = getModelInfo(res.model)
 
                     const providerIcon = PROVIDERS.find(
-                      (p) => p.id === model?.providerId
+                      (p) => p.id === model?.baseProviderId
                     )
-
-                    console.log("providerIcon", providerIcon)
-
-                    console.log("model", model)
 
                     return (
                       <div

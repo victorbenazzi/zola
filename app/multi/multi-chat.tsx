@@ -7,16 +7,31 @@ import { SYSTEM_PROMPT_DEFAULT } from "@/lib/config"
 import { useModel } from "@/lib/model-store/provider"
 import { useUser } from "@/lib/user-store/provider"
 import { cn } from "@/lib/utils"
+import { Message as MessageType } from "@ai-sdk/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 // import { mockMessageGroups } from "./mock-data"
 import { MultiChatInput } from "./multi-chat-input"
 import { useMultiChat } from "./use-multi-chat"
 
+// Import the exact types from MultiModelConversation to ensure compatibility
+type GroupedMessage = {
+  userMessage: MessageType
+  responses: {
+    model: string
+    message: MessageType
+    isLoading?: boolean
+    provider: string
+  }[]
+  onDelete: (model: string, id: string) => void
+  onEdit: (model: string, id: string, newText: string) => void
+  onReload: (model: string) => void
+}
+
 export function MultiChat() {
   const [prompt, setPrompt] = useState("")
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
-  const [messageGroups, setMessageGroups] = useState<any[]>([])
+  const [messageGroups, setMessageGroups] = useState<GroupedMessage[]>([])
   const [files, setFiles] = useState<File[]>([])
   const { user } = useUser()
   const { models, isLoading: isLoadingModels } = useModel()
@@ -82,10 +97,15 @@ export function MultiChat() {
               provider: chat.model.provider,
             })
           } else if (chat.isLoading && userMsg.content === prompt) {
-            // Currently loading for this prompt
+            // Currently loading for this prompt - create a placeholder message
+            const placeholderMessage: MessageType = {
+              id: `loading-${chat.model.id}`,
+              role: "assistant",
+              content: "",
+            }
             groups[groupKey].responses.push({
               model: chat.model.id,
-              message: null,
+              message: placeholderMessage,
               isLoading: true,
               provider: chat.model.provider,
             })
