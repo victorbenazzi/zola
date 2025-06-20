@@ -81,6 +81,10 @@ export function MultiModelConversation({
                       (p) => p.id === model?.providerId
                     )
 
+                    console.log("providerIcon", providerIcon)
+
+                    console.log("model", model)
+
                     return (
                       <div
                         key={res.model}

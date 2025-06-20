@@ -9,7 +9,7 @@ import { useUser } from "@/lib/user-store/provider"
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { mockMessageGroups } from "./mock-data"
+// import { mockMessageGroups } from "./mock-data"
 import { MultiChatInput } from "./multi-chat-input"
 import { useMultiChat } from "./use-multi-chat"
 
@@ -23,7 +23,7 @@ export function MultiChat() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // mock data for UI development
-  const [mockMessages, setMockMessages] = useState(mockMessageGroups)
+  // const [mockMessages, setMockMessages] = useState(mockMessageGroups)
 
   // Filter models to get real available models and transform them for useMultiChat
   const availableModels = useMemo(() => {
@@ -34,8 +34,14 @@ export function MultiChat() {
     }))
   }, [models])
 
-  // Use the custom hook to manage all chat instances
-  const modelChats = useMultiChat(availableModels)
+  // Use the custom hook to manage chat instances for selected models only
+  const selectedModels = useMemo(() => {
+    return availableModels.filter((model) =>
+      selectedModelIds.includes(model.id)
+    )
+  }, [availableModels, selectedModelIds])
+
+  const modelChats = useMultiChat(selectedModels)
 
   // Memoize system prompt
   const systemPrompt = useMemo(
@@ -50,8 +56,7 @@ export function MultiChat() {
     const groups: { [key: string]: any } = {}
 
     modelChats.forEach((chat) => {
-      if (!selectedModelIds.includes(chat.model.id)) return
-
+      // No need to check selectedModelIds since modelChats only contains selected models
       for (let i = 0; i < chat.messages.length; i += 2) {
         const userMsg = chat.messages[i]
         const assistantMsg = chat.messages[i + 1]
@@ -71,7 +76,7 @@ export function MultiChat() {
 
           if (assistantMsg?.role === "assistant") {
             groups[groupKey].responses.push({
-              model: chat.model.name,
+              model: chat.model.id,
               message: assistantMsg,
               isLoading: false,
               provider: chat.model.provider,
@@ -79,7 +84,7 @@ export function MultiChat() {
           } else if (chat.isLoading && userMsg.content === prompt) {
             // Currently loading for this prompt
             groups[groupKey].responses.push({
-              model: chat.model.name,
+              model: chat.model.id,
               message: null,
               isLoading: true,
               provider: chat.model.provider,
@@ -114,13 +119,9 @@ export function MultiChat() {
       const uid = await getOrCreateGuestUserId(user)
       if (!uid) return
 
-      // Send message to all selected models
-      const enabledChats = modelChats.filter((chat) =>
-        selectedModelIds.includes(chat.model.id)
-      )
-
+      // Send message to all models (they're already filtered to selected models)
       await Promise.all(
-        enabledChats.map(async (chat) => {
+        modelChats.map(async (chat) => {
           const options = {
             body: {
               chatId: `multi-${chat.model.id}-${Date.now()}`,
@@ -134,7 +135,6 @@ export function MultiChat() {
 
           chat.append(
             {
-              id: crypto.randomUUID(),
               role: "user",
               content: prompt,
             },
@@ -175,19 +175,17 @@ export function MultiChat() {
   }, [modelChats])
 
   const anyLoading = useMemo(
-    () =>
-      modelChats.some(
-        (chat) => chat.isLoading && selectedModelIds.includes(chat.model.id)
-      ),
-    [modelChats, selectedModelIds]
+    () => modelChats.some((chat) => chat.isLoading),
+    [modelChats]
   )
 
   // Memoize the conversation props
   const conversationProps = useMemo(
     () => ({
-      messageGroups: mockMessages as any, // Use mock data for testing
+      // messageGroups: mockMessages as any, // Use mock data for testing
+      messageGroups,
     }),
-    [mockMessages]
+    [messageGroups]
   )
 
   // Memoize the input props
@@ -221,16 +219,7 @@ export function MultiChat() {
     ]
   )
 
-  const showOnboarding = mockMessages.length === 0
-
-  // Show loading state while models are being fetched
-  if (isLoadingModels) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-muted-foreground">Loading models...</p>
-      </div>
-    )
-  }
+  const showOnboarding = messageGroups.length === 0
 
   return (
     <div
@@ -267,7 +256,7 @@ export function MultiChat() {
             layoutId="conversation"
             transition={{
               layout: {
-                duration: mockMessages.length === 1 ? 0.3 : 0,
+                duration: messageGroups.length === 1 ? 0.3 : 0,
               },
             }}
           >
@@ -286,7 +275,7 @@ export function MultiChat() {
         layoutId="multi-chat-input-container"
         transition={{
           layout: {
-            duration: mockMessages.length === 1 ? 0.3 : 0,
+            duration: messageGroups.length === 1 ? 0.3 : 0,
           },
         }}
       >

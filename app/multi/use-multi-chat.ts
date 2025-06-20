@@ -1,6 +1,6 @@
 import { toast } from "@/components/ui/toast"
 import { useChat } from "@ai-sdk/react"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 
 interface ModelConfig {
   id: string
@@ -38,15 +38,23 @@ export function useMultiChat(models: ModelConfig[]): ModelChat[] {
     })
   )
 
-  // Map the active models to their corresponding chat hooks
+  // Map only the provided models to their corresponding chat hooks
   const activeChatInstances = useMemo(() => {
-    return models.slice(0, MAX_MODELS).map((model, index) => ({
-      model,
-      messages: chatHooks[index].messages,
-      isLoading: chatHooks[index].isLoading,
-      append: chatHooks[index].append,
-      stop: chatHooks[index].stop,
-    }))
+    const instances = models.slice(0, MAX_MODELS).map((model, index) => {
+      const chatHook = chatHooks[index]
+
+      return {
+        model,
+        messages: chatHook.messages,
+        isLoading: chatHook.isLoading,
+        append: (message: any, options?: any) => {
+          return chatHook.append(message, options)
+        },
+        stop: chatHook.stop,
+      }
+    })
+
+    return instances
   }, [models, ...chatHooks.flatMap((chat) => [chat.messages, chat.isLoading])])
 
   return activeChatInstances
