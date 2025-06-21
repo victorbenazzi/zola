@@ -62,7 +62,8 @@ export function InteractionPreferences() {
         </div>
       </div>
       {/* Multi-Model Chat */}
-      <div>
+      {/* @todo: when multi-model chat is ready */}
+      {/* <div>
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-medium">Multi-model chat</h3>
@@ -75,7 +76,7 @@ export function InteractionPreferences() {
             onCheckedChange={setMultiModelEnabled}
           />
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
