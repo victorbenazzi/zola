@@ -26,9 +26,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Zola",
+  title: "Lucide AI",
   description:
-    "Zola is the open-source interface for AI chat. Multi-model, BYOK-ready, and fully self-hostable. Use Claude, OpenAI, Gemini, local models, and more, all in one place.",
+    "Meet the future of AI. Lucide AI is a brazilian assistant that can help you with your tasks and projects.",
 }
 
 export default async function RootLayout({
